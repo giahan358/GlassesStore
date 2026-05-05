@@ -507,6 +507,8 @@
                                     <button type="button" class="btn btn-danger btn-huy-don" data-id="{{ $hoaDon->getId() }}">Huỷ đơn hàng</button>
                                     @elseif ($hoaDon->getTrangThai() === HoaDonEnum::DADAT)
                                     <button type="button" class="btn btn-danger btn-huy-don" data-id="{{ $hoaDon->getId() }}">Huỷ đơn hàng</button>
+                                    @elseif ($hoaDon->getTrangThai() === HoaDonEnum::PAID)
+                                    <button type="button" class="btn btn-danger btn-hoan-tien" data-id="{{ $hoaDon->getId() }}">Huỷ đơn hàng</button>
                                     @endif
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                                 </div>
@@ -689,6 +691,37 @@
                     },
                     error: function() {
                         alert('Không thể kết nối đến máy chủ.');
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        $('.btn-hoan-tien').on('click', function() {
+            const idHoaDon = $(this).data('id');
+            
+            if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này? Số lượng sản phẩm sẽ được hoàn lại kho.')) {
+                $.ajax({
+                    url: `/vnpay-refund/${idHoaDon}`,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}' // Bắt buộc phải có CSRF Token trong Laravel
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload(); // Load lại trang để cập nhật trạng thái mới
+                        } else {
+                            alert('Lỗi: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, thrownError) {
+                        // In chi tiết lỗi đỏ chót ra màn hình Console (F12)
+                        console.error("Chi tiết lỗi AJAX:", xhr.responseText);
+                        
+                        // Báo alert mã lỗi để bạn dễ nhận biết
+                        alert('Máy chủ trả về lỗi ' + xhr.status + '. Nhấn F12 chọn tab Console để xem chi tiết!');
                     }
                 });
             }

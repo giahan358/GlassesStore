@@ -4,6 +4,7 @@ namespace App\Bus;
 use App\Dao\PaymentAttempt_DAO;
 use App\Bus\HoaDon_BUS; 
 use Carbon\Carbon;
+use App\Bus\PaymentTransaction_BUS;
 
 class Payment_BUS
 {
@@ -95,7 +96,7 @@ class Payment_BUS
         return $vnp_Url; 
     }
     //cập nhật trạng thái thanh toán theo mã phản hồi từ VNPay
-    public function updatePaymentAttemptStatus($txnRef, $responseCode)
+    public function updatePaymentAttemptStatus($request, $txnRef, $responseCode)
     {
         if ($responseCode == '00') {
             // 1. Cập nhật lịch sử thanh toán thành công
@@ -109,7 +110,8 @@ class Payment_BUS
                     $this->hoaDonBUS->updateModel($hd);
                 }
             }
-            
+            app(\App\Bus\PaymentTransaction_BUS::class)->saveVnpaySuccess($request, $attempt->order_id);
+
             return [
                 'status' => 'success',
                 'message' => 'Giao dịch thành công!'
@@ -174,6 +176,6 @@ class Payment_BUS
         $txnRef = $inputData['vnp_TxnRef'] ?? null; 
         $responseCode = $inputData['vnp_ResponseCode'] ?? null; 
 
-        return $this->updatePaymentAttemptStatus($txnRef, $responseCode);
+        return $this->updatePaymentAttemptStatus($inputData, $txnRef, $responseCode);
     }
 }

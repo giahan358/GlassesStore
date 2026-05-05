@@ -591,6 +591,7 @@ Route::get('/vnpay-create/{hd}', [PaymentController::class, 'createPayment'])->n
 Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('vnpay.return');
 Route::get('/vnpay-ipn', [\App\Http\Controllers\PaymentController::class, 'vnpayIpn'])->name('vnpay.ipn');
 Route::get('/paymentcancelled/{orderId}', [PaymentController::class, 'showCancelledPage'])->name('payment.cancelled');
+Route::post('/vnpay-refund/{id}', [PaymentController::class, 'vnpayRefund'])->name('vnpay.refund');
 
 //route dẫn đến thanh toán phòng khi người dùng tắt nhầm trang thanh toán
 Route::get('/payment/retry/{order_id}', [PaymentController::class, 'retryPayment'])->name('payment.retry');

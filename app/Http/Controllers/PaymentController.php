@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Bus\Payment_BUS;
 use App\Bus\HoaDon_BUS;
 use Illuminate\Support\Facades\URL;
+use App\Models\PaymentTransaction;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Bus\PaymentRefund_BUS;
 class PaymentController extends Controller
 {
     protected $paymentBUS;
@@ -146,5 +150,90 @@ class PaymentController extends Controller
         $vnp_Url = $order->getLinktt(); // Gọi lại hàm tạo URL bạn đã viết
         // 4. Đẩy khách sang VNPay
         return redirect()->away($vnp_Url);
+    }
+
+    public function vnpayRefund(Request $request, $orderId)
+    {
+        try {
+            // 1. Tìm lại "biên lai" giao dịch thu tiền THÀNH CÔNG gốc
+            $transaction = PaymentTransaction::where('order_id', $orderId)
+                ->where('transaction_type', 'payment')
+                ->where('result_code', '00')
+                ->first();
+
+            if (!$transaction) {
+                // SỬA THÀNH TRẢ VỀ JSON
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Không tìm thấy giao dịch thanh toán gốc hợp lệ để hoàn tiền.'
+                ]);
+            }
+
+            // 2. Chuẩn bị dữ liệu
+            $amount = $transaction->amount; 
+            $vnpayTransactionNo = $transaction->provider_transaction_id; 
+            $payDate = \Carbon\Carbon::parse($transaction->paid_at)->format('YmdHis');
+            
+            // Xử lý an toàn khi auth()->user() bị null (Tránh lỗi Undefined property name)
+            $adminName = auth()->user() ? auth()->user()->name : 'Admin';
+
+            // 3. Gọi sang file BUS để bắn API
+            $vnpayRefundBus = new \App\Bus\PaymentRefund_BUS(); 
+            $result = $vnpayRefundBus->callRefundApi($transaction->provider_reference_no, $amount, $vnpayTransactionNo, $payDate, $adminName);
+
+            // 4. XỬ LÝ KẾT QUẢ TRẢ VỀ TỪ VNPAY
+            if (isset($result['success']) && $result['success']) {
+                
+                DB::beginTransaction();
+                try {
+                    PaymentTransaction::create([
+                        'order_id'                => $orderId,
+                        'provider'                => 'vnpay',
+                        'transaction_type'        => 'refund', 
+                        'provider_transaction_id' => $result['data']['vnp_TransactionNo'] ?? $vnpayTransactionNo,
+                        'bank_code'               => $transaction->bank_code,
+                        'amount'                  => $amount,
+                        'currency_code'           => 'VND',
+                        'net_amount'              => $amount, 
+                        'result_code'             => '00',
+                        'result_message'          => 'Hoàn tiền thành công',
+                        'is_verified'             => 0, 
+                        'paid_at'                 => now(),
+                    ]);
+
+                    DB::commit();
+                    
+                    // TRẢ VỀ JSON THÀNH CÔNG
+                    return response()->json([
+                        'success' => true, 
+                        'message' => 'Đã hoàn tiền thành công cho khách hàng!'
+                    ]);
+
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    Log::error('Lỗi lưu Database khi Hoàn tiền: ' . $e->getMessage());
+                    
+                    return response()->json([
+                        'success' => false, 
+                        'message' => 'VNPAY đã hoàn tiền nhưng xảy ra lỗi khi lưu vào Database!'
+                    ]);
+                }
+
+            } else {
+                // TRẢ VỀ JSON LỖI TỪ VNPAY
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Hoàn tiền VNPAY thất bại: ' . ($result['message'] ?? 'Lỗi không xác định')
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Lỗi Controller hoàn tiền: ' . $e->getMessage() . ' tại ' . $e->getLine());
+            
+            return response()->json([
+                'success' => false, 
+                'message' => 'Đã xảy ra lỗi hệ thống khi xử lý hoàn tiền.'
+            ], 500); // Thêm mã 500 để khối AJAX nhận diện được lỗi server
+        }
     }
 }

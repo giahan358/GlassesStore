@@ -12,7 +12,7 @@ class TaiKhoan_BUS{
     public function __construct(TaiKhoan_DAO $tai_khoan_dao)
     {
         $this->taiKhoanDAO = $tai_khoan_dao;
-        $this->refreshData();
+        
     }
     public function refreshData(): void
     {
@@ -20,6 +20,7 @@ class TaiKhoan_BUS{
     }
     public function getAllModels() : array
     {
+        $this->refreshData();
         return $this->taiKhoanList;
     }
     public function getModelById($id)

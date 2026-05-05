@@ -27,10 +27,11 @@ class HoaDon_BUS{
         $this->hoaDonDAO = $hoaDonDAO;
         $this->cthdDAO = $cthdDAO;
         $this->cthdBUS = $cthdBUS;
-        $this->refreshData();
+        
     }
 
     public function getAllModels() {
+        $this->refreshData();
         return $this->listHoaDon;
     }
 

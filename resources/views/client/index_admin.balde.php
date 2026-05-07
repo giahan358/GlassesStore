@@ -473,9 +473,18 @@ use App\Bus\SanPham_BUS;
           <nav aria-label="Page navigation example" class="d-flex justify-content-center">
             <ul class="pagination">
                 <!-- Hiển thị PREV nếu không phải trang đầu tiên -->
+
                 <?php
                 $queryString = isset($_GET['keyword']) ? '&keyword=' . urlencode($_GET['keyword']) : '';
                 $query = $_GET;
+                $items_per_page = 8; 
+                $allHoaDon = app(App\Bus\HoaDon_BUS::class)->getAllModels(); 
+                $total_items = is_array($allHoaDon) ? count($allHoaDon) : 0;
+                $current_page = request()->input('page', 1); 
+
+                $total_page = ceil((int)$total_items / $items_per_page);
+
+                $query = request()->query();
 
                 // PREV
                 if ($current_page > 1) {
@@ -518,50 +527,44 @@ use App\Bus\SanPham_BUS;
     </div>
   </div>
   <div class="container-custom">
-    <a><i class="fa-solid fa-shield-check fa-beat"></i>
+    <a>
       <p>Bảo hành trọn đời</p>
     </a>
-    <a><i class="fa-solid fa-flower-daffodil fa-beat"></i>
+    <a>
       <p>Đo mắt miễn phí</p>
     </a>
-    <a><i class="fa-solid fa-rotate fa-spin"></i>
+    <a>
       <p>Thu cũ đổi mới</p>
     </a>
-    <a><i class="fa-solid fa-spray-can-sparkles fa-shake"></i>
+    <a>
       <p>Vệ sinh & Bảo quản</p>
     </a>
   </div>
-  <div class="d-flex " style="padding: 0 5%;">
-    <div style="width: 40%;"><img src="/client/img/Artboard-2-copy-5.png" alt="" class="img-fluid w-100"></div>
-    <div style="padding-left: 50px;width: 60%;">
-      <h2 style="padding: 30px;background-color: #e4f4f4;border-top-left-radius: 30px;border-top-right-radius: 30px;border-bottom-right-radius: 30px;color: #55d5d2;font-weight: 800;">CHỌN KÍNH PHÙ HỢP VỚI BẠN</h2>
-      <div class="choiceglasses" >
-        <a href="#">
-          <h3>CHỌN KÍNH THEO KHUÔN MẶT</h3>
-          <p style="margin: 0;width: 60%;">Lựa chọn kính theo hình dáng khuôn mặt và sở thích cá nhân của bạn</p>
-        </a>
-        <div style="display: block; text-align: center;font-size: 50px;transform: translateX(-100px);color: #413f3f;"><i class="fa-solid fa-arrow-right" style="transition: transform 0.5s ease;"></i></div>
-      </div>
-      <div class="choiceglasses" >
-        <a href="#">
-          <h3>CHỌN KÍNH THEO PHONG CÁCH</h3>
-          <p style="margin: 0;width: 60%;">Lựa chọn kính theo hình dáng khuôn mặt và sở thích cá nhân của bạn</p>
-        </a>
-        <div style="display: block; text-align: center;font-size: 50px;transform: translateX(-100px);color: #413f3f;"><i class="fa-solid fa-arrow-right" style="transition: transform 0.5s ease;"></i></div>
-      </div><div class="choiceglasses" >
-        <a href="#">
-          <h3>CHỌN KÍNH THEO CÔNG VIỆC</h3>
-          <p style="margin: 0;width: 60%;">Lựa chọn kính theo hình dáng khuôn mặt và sở thích cá nhân của bạn</p>
-        </a>
-        <div style="display: block; text-align: center;font-size: 50px;transform: translateX(-100px);color: #413f3f;"><i class="fa-solid fa-arrow-right" style="transition: transform 0.5s ease;"></i></div>
-      </div><div class="choiceglasses" >
-        <a href="#">
-          <h3>CHỌN KÍNH THEO SỞ THÍCH</h3>
-          <p style="margin: 0;width: 60%;">Lựa chọn kính theo hình dáng khuôn mặt và sở thích cá nhân của bạn</p>
-        </a>
-        <div style="display: block; text-align: center;font-size: 50px;transform: translateX(-100px);color: #413f3f;"><i class="fa-solid fa-arrow-right" style="transition: transform 0.5s ease;"></i></div>
-      </div>
+  <div class="d-flex" style="padding: 0 5%;">
+    <div style="width: 40%;">
+        <img src="/client/img/Artboard-2-copy-5.png" alt="" class="img-fluid w-100">
     </div>
+
+    <div style="padding-left: 50px; width: 60%;">
+        <h2 style="padding: 30px; background-color: #e4f4f4; border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; color: #55d5d2; font-weight: 800; text-transform: uppercase;">
+            VŨ TRỤ TRUYỀN THÔNG
+        </h2>
+        
+        <div style="padding-top: 20px; color: #413f3f; line-height: 1.6;">
+            <p style="font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;">
+                Kính mắt Anna chắc không còn quá xa lạ với giới trẻ nữa. Đây là kênh thông tin mua sắm và giải trí dành cho giới trẻ, là “món ăn tinh thần” hằng ngày không thể thiếu của mỗi người trẻ.
+            </p>
+            
+            <p>
+                Được thành lập từ năm 2015, trải qua hơn 7 năm phát triển kính mắt Anna đã, đang và sẽ chiếm vị trí không thể thiếu đối với các bạn trẻ. 
+            </p>
+            
+            <p>
+                Cập nhật thông tin thời trang nhanh chóng và phù hợp với thị hiếu của khán giả thông qua các mạng xã hội như <strong>Facebook, Tiktok, Instagram, Youtube</strong>, kính mắt Anna là lựa chọn hàng đầu cho những ai muốn tận hưởng các bài viết, video vừa mang tính giải trí mà vẫn có đầy đủ thông tin cần thiết.
+            </p>
+        </div>
+    </div>
+</div>
 
   </div>
   <!-- Footer -->
@@ -589,11 +592,9 @@ use App\Bus\SanPham_BUS;
         <div class="product-info">
           <label for="">Sản phẩm</label>
           <ul>
-            <li><a href="#">The Titan</a></li>
-            <li><a href="#">Gọng Kính</a></li>
-            <li><a href="#">Tròng Kính</a></li>
+             <li><a href="#">Gọng Kính</a></li>
             <li><a href="#">Kính râm</a></li>
-            <li><a href="#">Kính râm trẻ em</a></li>
+            <li><a href="#">Kính mát</a></li>
           </ul>
         </div>
         <div class="purchase-policy">
@@ -620,7 +621,7 @@ use App\Bus\SanPham_BUS;
       </div>
     </div>
     <div class="copyright">
-      <p style="margin: 0;">Anna 2018-2026. Design by OKHUB Viet Nam</p>
+      <p style="margin: 0;">Anna 2015-2026. Design by OKHUB Viet Nam</p>
     </div>
   </footer>
 

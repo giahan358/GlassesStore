@@ -3,10 +3,10 @@
 .bootstrap-select > .dropdown-toggle.bs-placeholder, 
 .bootstrap-select > .dropdown-toggle.btn-light,
 .bootstrap-select > .dropdown-toggle {
-    background-color: #ffffff !important; /* Nền trắng */
-    border: 1px solid #dee2e6 !important; /* Viền xám nhẹ giống input */
-    color: #212529 !important;            /* Chữ đen */
-    box-shadow: none !important;          /* Bỏ bóng đổ */
+    background-color: #ffffff !important; 
+    border: 1px solid #dee2e6 !important; 
+    color: #212529 !important;            
+    box-shadow: none !important;        
 }
 
 /* Khi di chuột qua hoặc đang mở menu */
@@ -92,29 +92,36 @@ document.addEventListener("DOMContentLoaded", function () {
         selectTrangThai.innerHTML = "";
 
         const allStatuses = [
-            { v: "PENDING", l: "Đang xử lý" },
+            { v: "PENDING", l: "Chờ thanh toán" },
             { v: "DADAT", l: "Đã đặt" },
             { v: "PAID", l: "Đã thanh toán" },
             { v: "DANGGIAO", l: "Đang giao" },
             { v: "DAGIAO", l: "Đã giao" },
-            { v: "CANCELLED", l: "Đã hủy" },
+            { v: "CANCELLED", l: "Hủy đơn" },
             { v: "REFUNDED", l: "Đã hoàn tiền" }
         ];
 
         let allowed = [];
         if (data.trangThai === "PENDING") {
-            allowed = ["PENDING", "DADAT", "CANCELLED"];
-        } else if (data.trangThai === "DADAT") {
+        // Nếu là PENDING, không cho phép chọn gì cả
+        allowed = ["PENDING"]; 
+        selectTrangThai.disabled = true; // Khóa luôn ô chọn, Admin không bấm vào được
+    } else {
+        // Nếu không phải PENDING, mở khóa ô chọn để Admin thao tác
+        selectTrangThai.disabled = false;
+
+        if (data.trangThai === "DADAT") {
             allowed = (data.pttt === "Tiền mặt") ? ["DADAT", "DANGGIAO", "CANCELLED"] : ["DADAT", "PAID", "CANCELLED"];
         } else if (data.trangThai === "PAID") {
             allowed = ["PAID", "DANGGIAO"];
         } else if (data.trangThai === "DANGGIAO") {
             allowed = ["DANGGIAO", "DAGIAO"];
         } else if (data.trangThai === "DAGIAO") {
-            allowed = (data.pttt === "Tiền mặt") ? ["DAGIAO", "PAID"] : ["DAGIAO"];
+           allowed = ["DAGIAO"];
         } else {
             allowed = [data.trangThai]; 
         }
+    }
 
         allStatuses.forEach(s => {
             if (allowed.includes(s.v)) {
@@ -169,7 +176,7 @@ tbody.innerHTML = (data.cthd && data.cthd.length > 0) ? data.cthd.map(item => {
                 <option value="{{ $status->value }}" {{ request('trangthai') == $status->value ? 'selected' : '' }}>
                     @switch($status)
                         @case(\App\Enum\HoaDonEnum::PENDING)
-                            Đang xử lý
+                            Chờ thanh toán
                             @break
                         @case(\App\Enum\HoaDonEnum::PAID)
                             Đã thanh toán
@@ -248,7 +255,7 @@ tbody.innerHTML = (data.cthd && data.cthd.length > 0) ? data.cthd.map(item => {
                         @if($hoaDon->getTrangThai() == \App\Enum\HoaDonEnum::PAID)
                             <span class="badge bg-success">Đã thanh toán</span>
                         @elseif($hoaDon->getTrangThai() == \App\Enum\HoaDonEnum::PENDING)
-                            <span class="badge bg-warning text-dark">Đang xử lý</span>
+                            <span class="badge bg-warning text-dark">Chờ thanh toán</span>
                         @elseif($hoaDon->getTrangThai() == \App\Enum\HoaDonEnum::EXPIRED)
                             <span class="badge bg-secondary">Hết hạn</span>
                         @elseif($hoaDon->getTrangThai() == \App\Enum\HoaDonEnum::CANCELLED)
@@ -425,7 +432,7 @@ tbody.innerHTML = (data.cthd && data.cthd.length > 0) ? data.cthd.map(item => {
                                                         <option value="{{ $status->value }}">
                                                             @switch($status)
                                                                 @case(\App\Enum\HoaDonEnum::PENDING)
-                                                                    Đang xử lý
+                                                                    Chờ thanh toán
                                                                     @break
                                                                 @case(\App\Enum\HoaDonEnum::PAID)
                                                                     Đã thanh toán

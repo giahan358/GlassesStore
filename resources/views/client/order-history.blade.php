@@ -521,7 +521,7 @@
     </main>
 
     <footer class="footer">
-        <p>Anna © 2018 - 2026. Design by OkHub VietNam</p>
+        <p>Anna © 2015 - 2026. Design by OkHub VietNam</p>
         <div>
             <a>Hệ Thống Cửa Hàng</a>
             <a>Cửa Hàng</a>
@@ -660,7 +660,7 @@
             }
         });
        const statuses = [
-    { value: "PENDING", label: "Đang xử lý" },
+    { value: "PENDING", label: "Chờ thanh toán" },
     { value: "PAID", label: "Đã thanh toán" },
     { value: "EXPIRED", label: "Hết hạn" },
     { value: "CANCELLED", label: "Đã hủy" },

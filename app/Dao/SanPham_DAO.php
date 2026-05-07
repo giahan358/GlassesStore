@@ -380,27 +380,26 @@ class SanPham_DAO implements DAOInterface{
     }
 
     public function getTop4ProductWasHigestSale() {
-        $list = [];
-        $query = "SELECT 
-                        sp.ID AS IDSanPham,
-                        sp.TENSANPHAM,
-                        COUNT(cthd.SOSERI) AS SoLanXuatHien
-                    FROM cthd
-                    JOIN hoadon hd ON cthd.IDHD = hd.ID
-                    JOIN ctsp ON cthd.SOSERI = ctsp.SOSERI
-                    JOIN sanpham sp ON ctsp.IDSP = sp.ID
-                    WHERE hd.TRANGTHAI = 'PAID'
-                    GROUP BY sp.ID, sp.TENSANPHAM
-                    ORDER BY SoLanXuatHien DESC
-                    LIMIT 4";
-        $rs = database_connection::executeQuery($query);
-        while($row = $rs->fetch_assoc()) {
-            $model = $this->getById($row['IDSanPham']);
-            array_push($list, $model);
-        }
-        return $list;
+    $list = [];
+    // Truy vấn: cthd nối với ctsp qua SOSERI, sau đó ctsp nối với sanpham qua IDSP
+    $query = "SELECT sp.*, COUNT(ctsp.IDSP) as total_sold 
+              FROM cthd
+              JOIN ctsp ON cthd.SOSERI = ctsp.SOSERI
+              JOIN sanpham sp ON ctsp.IDSP = sp.ID
+              JOIN hoadon hd ON cthd.IDHD = hd.ID
+              WHERE hd.TRANGTHAI = 'DAGIAO' 
+              GROUP BY sp.ID
+              ORDER BY total_sold DESC
+              LIMIT 4";
 
+    $rs = database_connection::executeQuery($query);
+
+    while ($row = $rs->fetch_assoc()) {
+        $model = $this->createSanPhamModel($row);
+        array_push($list, $model);
     }
+    return $list;
+}
 
     public function getStock($idPd) {
         $query = "SELECT sp.ID, COUNT(ctsp.SOSERI) AS SoLuongSoSeri

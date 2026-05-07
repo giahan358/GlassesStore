@@ -189,36 +189,38 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
             },
             success: function (response) {
     if (response.status === 'success') {
-        // --- 1. THÊM RADIO HỌ TÊN MỚI ---
+        // Kiểm tra và thêm Họ tên mới nếu chưa có trong danh sách hiển thị
         if (overrideName) {
-            let html = `
-                <div class="form-check py-2 border-bottom">
-                    <input class="form-check-input" type="radio" name="radioHoTen" value="${overrideName}" checked>
-                    <label class="form-check-label w-100">${overrideName}</label>
-                </div>`;
-            $('#listHoTenContainer').prepend(html); // Dùng prepend để đẩy lên đầu danh sách
+            let isExist = false;
+            $('#listHoTenContainer input').each(function() {
+                if($(this).val() === overrideName) isExist = true;
+            });
+            if(!isExist) {
+                $('#listHoTenContainer').prepend(`<div class="form-check py-2 border-bottom"><input class="form-check-input" type="radio" name="radioHoTen" value="${overrideName}" checked><label class="form-check-label w-100">${overrideName}</label></div>`);
+            }
         }
 
-        // --- 2. THÊM RADIO SỐ ĐIỆN THOẠI MỚI ---
+        // Kiểm tra và thêm SĐT mới nếu chưa có
         if (overridePhone) {
-            let html = `
-                <div class="form-check py-2 border-bottom">
-                    <input class="form-check-input" type="radio" name="radioSDT" value="${overridePhone}" checked>
-                    <label class="form-check-label w-100">${overridePhone}</label>
-                </div>`;
-            $('#listSDTContainer').prepend(html);
+            let isExist = false;
+            $('#listSDTContainer input').each(function() {
+                if($(this).val() === overridePhone) isExist = true;
+            });
+            if(!isExist) {
+                $('#listSDTContainer').prepend(`<div class="form-check py-2 border-bottom"><input class="form-check-input" type="radio" name="radioSDT" value="${overridePhone}" checked><label class="form-check-label w-100">${overridePhone}</label></div>`);
+            }
         }
 
-        // --- 3. THÊM RADIO ĐỊA CHỈ MỚI ---
+        // Kiểm tra và thêm Địa chỉ mới nếu chưa có
         if (overrideAddress) {
-            let html = `
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="radioDefault" value="${overrideAddress}" checked>
-                    <label class="form-check-label text-break w-100">${overrideAddress}</label>
-                </div>`;
-            $('#listDiaChiContainer').prepend(html);
+            let isExist = false;
+            $('#listDiaChiContainer input').each(function() {
+                if($(this).val() === overrideAddress) isExist = true;
+            });
+            if(!isExist) {
+                $('#listDiaChiContainer').prepend(`<div class="form-check py-2 border-bottom"><input class="form-check-input" type="radio" name="radioDefault" value="${overrideAddress}" checked><label class="form-check-label w-100">${overrideAddress}</label></div>`);
+            }
         }
-
         // --- 4. CẬP NHẬT HIỂN THỊ VÀ ĐÓNG MODAL ---
         $('#hienThiHoTen').text(currentHT);
         $('#hoten_data').val(currentHT);
@@ -243,12 +245,18 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
     });
 
     // --- XỬ LÝ LƯU SỐ ĐIỆN THOẠI MỚI ---
-    $('#btnSaveSDT').on('click', function(e) {
-        e.preventDefault();
-        let newVal = $('#inputNewSDT').val().trim();
-        if(newVal === "") return alert("Vui lòng nhập số điện thoại!");
-        syncAndSaveData(null, null, newVal);
-    });
+   $('#btnSaveSDT').on('click', function(e) {
+    e.preventDefault();
+    let newVal = $('#inputNewSDT').val().trim();
+    
+    // Regex: bắt đầu là số, độ dài đúng 10
+    const sdtRegex = /^[0-9]{10}$/;
+
+    if(newVal === "") return alert("Vui lòng nhập số điện thoại!");
+    if(!sdtRegex.test(newVal)) return alert("Số điện thoại phải nhập đúng 10 chữ số!");
+    
+    syncAndSaveData(null, null, newVal);
+});
 
     // --- XỬ LÝ LƯU ĐỊA CHỈ MỚI ---
     $('#btnDiaChi').on('click', function (e) {
@@ -426,6 +434,10 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
                         <p class="text-dark fw-semibold fs-4">Tổng tiền</p>
                         <p class="text-danger fw-semibold fs-4" id="tongtien">{{ number_format($sum, 0, ',', '.') }}₫</p>
                     </div>
+                    <div class="d-flex justify-content-between ">
+                        <p class="text-dark fw-semibold fs-4">Phí vận chuyển:</p>
+                        <p class="text-danger fw-semibold fs-4">Miễn phí</p>
+                    </div>
                 </div>
                 {{-- Kiểm tra nếu biến flag tồn tại và có giá trị true --}}
 @if(isset($flag) && $flag == true)
@@ -466,9 +478,11 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
             </div>
             <hr>
            <div id="listHoTenContainer">
+            @php $seenNames = []; @endphp
     @foreach($listDiaChi as $dc)
         @php $hoTen = trim($dc->getHoTen()); @endphp
-        @if(!empty($hoTen))
+        @if(!empty($hoTen) && !in_array($hoTen, $seenNames))
+            @php $seenNames[] = $hoTen; @endphp
         <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
             <div class="flex-grow-1">
                 <input class="form-check-input" type="radio" name="radioHoTen" value="{{ $hoTen }}">
@@ -502,10 +516,11 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
             </div>
             <hr>
             <div id="listSDTContainer">
+       @php $seenPhones = []; @endphp
     @foreach($listDiaChi as $dc)
         @php $sdt = trim($dc->getSoDienThoai()); @endphp
-        {{-- Chỉ hiển thị nếu số điện thoại không rỗng --}}
-        @if(!empty($sdt))
+        @if(!empty($sdt) && !in_array($sdt, $seenPhones))
+            @php $seenPhones[] = $sdt; @endphp
         <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
             <div class="flex-grow-1">
                 <input class="form-check-input" type="radio" name="radioSDT" value="{{ $sdt }}">
@@ -543,10 +558,11 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
             </div>
             <hr>
             <div id="listDiaChiContainer">
+   @php $seenAddresses = []; @endphp
     @foreach($listDiaChi as $dc)
         @php $diachi = trim($dc->getDiaChi()); @endphp
-        {{-- Chỉ hiển thị nếu địa chỉ không rỗng --}}
-        @if(!empty($diachi))
+        @if(!empty($diachi) && !in_array($diachi, $seenAddresses))
+            @php $seenAddresses[] = $diachi; @endphp
         <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
             <div class="flex-grow-1">
                 <input class="form-check-input" type="radio" name="radioDefault" value="{{ $diachi }}">

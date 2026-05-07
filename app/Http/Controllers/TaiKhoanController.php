@@ -39,13 +39,18 @@ class TaiKhoanController extends Controller
         'email' => ':attribute không đúng định dạng.',
         'min' => ':attribute phải có ít nhất :min ký tự.',
         'exists' => ':attribute không hợp lệ.',
+        'password.regex' => 'Mật khẩu phải bao gồm ít nhất một ký tự đặc biệt (@$!%*?&).',
     ];
 
     // 3. Validation
     $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
         'username' => 'required|string|max:255|unique:taikhoan,tentk',
         'email' => 'required|email|unique:taikhoan,email',
-        'password' => 'required|min:6',
+        'password' => [
+            'required',
+            'min:6',
+            'regex:/[@$!%*?&]/' 
+        ],
         'idquyen' => 'required|exists:quyen,id',
         'idnguoidung' => 'required|exists:nguoidung,id',
     ], $messages, $attributes);
@@ -84,6 +89,7 @@ public function update(Request $request)
         'unique' => ':attribute này đã bị trùng với tài khoản khác.',
         'email' => ':attribute không đúng định dạng.',
         'min' => ':attribute mới phải có ít nhất :min ký tự.',
+        'password.regex' => 'Mật khẩu phải bao gồm ít nhất một ký tự đặc biệt (@$!%*?&).',
     ];
 
     // 1. Validation 
@@ -93,7 +99,11 @@ public function update(Request $request)
         'email' => 'required|email', 
         'idquyen' => 'required',
         'idnguoidung' => 'required',
-        'password' => 'nullable|min:6', 
+        'password' => [
+            'required',
+            'min:6',
+            'regex:/[@$!%*?&]/' 
+        ],
     ], $messages, $attributes);
 
     if ($validator->fails()) {

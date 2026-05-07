@@ -116,11 +116,17 @@ class PaymentRefund_BUS
             }
 
         } catch (\Exception $e) {
-            Log::error('Lỗi gọi API Hoàn tiền: ' . $e->getMessage());
-            return [
-                'success' => false,
-                'message' => 'Lỗi kết nối máy chủ'
-            ];
+    // Sửa dòng này để xem lỗi thật sự trong file storage/logs/laravel.log
+    Log::error('Lỗi gọi API Hoàn tiền: ' . $e->getMessage(), [
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+    ]);
+    
+    return [
+        'success' => false,
+        'message' => 'Lỗi kết nối máy chủ: ' . $e->getMessage() // Trả về thông báo lỗi cụ thể để debug
+    ];
         }
     }
 }

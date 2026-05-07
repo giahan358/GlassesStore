@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(document.getElementById('statusChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Đã giao', 'Chờ xử lý', 'Đã hủy'],
+            labels: ['Đã giao', 'Chờ thanh toán', 'Đã hủy'],
             datasets: [{
                 data: [stats.counts.success, stats.counts.waiting, stats.counts.cancelled],
                 backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c'],

@@ -493,6 +493,7 @@ Route::get('/success', function(Request $request) {
         'hoaDon' => $hoaDon
     ]);
 });
+
 Route::get('/thanh-toan-thanh-cong/{orderId}', [PaymentController::class, 'showSuccessPage'])->name('order.success');
 Route::view('/createdPayment', 'client.MuaNgay');
 Route::get('/getCTHD', [HoaDonController::class, 'getCTHDByIDSPAndIDHD'])->name('payment.getCTHDByIDSPAndIDHD');

@@ -59,12 +59,22 @@ class AuthController extends Controller {
             'gioiTinh' => 'required|in:MALE,FEMALE,UNDEFINED',
             'diaChi' => 'required|string|max:255',
             'tinh' => 'required|exists:tinh,id', // hoặc table bạn đang dùng
-            'sodienthoai' => 'required|regex:/^[0-9]{10,11}$/',
+            'sodienthoai' => 'required|regex:/^[0-9]{10}$/',
             'cccd' => 'required|digits:12',
             'tenTK' => 'required|string|min:4|max:30',
             'email' => 'required|email|unique:taikhoan,email', // chỉnh tên bảng nếu khác
-            'password' => 'required|string|min:6',
-        ]);
+            'password' => [
+            'required',
+            'string',
+            'min:6',
+            'regex:/[@$!%*?&]/' 
+        ],
+        ], [
+        // Bổ sung thông báo lỗi tiếng Việt
+        'sodienthoai.regex' => 'Số điện thoại phải bao gồm đúng 10 chữ số.',
+        'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+        'password.regex' => 'Mật khẩu phải bao gồm ít nhất một ký tự đặc biệt (@$!%*?&).',
+    ]);
         $hoTen = $request->input('hoTen');
         $ngaySinh = $request->input('ngaySinh');
         $gioiTinh = match ($request->input('gioiTinh')) {

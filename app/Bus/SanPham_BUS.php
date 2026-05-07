@@ -90,7 +90,7 @@ class SanPham_BUS implements BUSInterface {
         return $this->sanPhamDAO->searchByKhoangGiaAndModel($keyword,$startprice,$endprice);
     }
     public function getTop4ProductWasHigestSale() {
-        return $this->sanPhamDAO->getTop4ProductWasHigestSale();
+    return $this->sanPhamDAO->getTop4ProductWasHigestSale();
     }
     public function getStock($idPd) {
         return $this->sanPhamDAO->getStock($idPd);

@@ -145,7 +145,7 @@ class HistoryController extends Controller
     }
 
     $statuses = [
-        ['value' => 'PENDING', 'label' => 'Đang xử lý'],
+        ['value' => 'PENDING', 'label' => 'Chờ thanh toán'],
         ['value' => 'PAID', 'label' => 'Đã thanh toán'],
         ['value' => 'EXPIRED', 'label' => 'Hết hạn'],
         ['value' => 'CANCELLED', 'label' => 'Đã hủy'],
@@ -284,7 +284,7 @@ class HistoryController extends Controller
             session(['cart' => []]);
         }
         $statuses = [
-            ['value' => 'PENDING', 'label' => 'Đang xử lý'],
+            ['value' => 'PENDING', 'label' => 'Chờ thanh toán'],
             ['value' => 'PAID', 'label' => 'Đã thanh toán'],
             ['value' => 'EXPIRED', 'label' => 'Hết hạn'],
             ['value' => 'CANCELLED', 'label' => 'Đã hủy'],

@@ -226,14 +226,11 @@
         </div>
       </div>
       <div class="footer-center">
-        <div class="product-info">
-          <label for="">Sản phẩm</label>
+        <label for="">Sản phẩm</label>
           <ul>
-            <li><a href="#">The Titan</a></li>
             <li><a href="#">Gọng Kính</a></li>
-            <li><a href="#">Tròng Kính</a></li>
             <li><a href="#">Kính râm</a></li>
-            <li><a href="#">Kính râm trẻ em</a></li>
+            <li><a href="#">Kính mát</a></li>
           </ul>
         </div>
         <label for="">Chính sách mua hàng</label>
@@ -259,7 +256,7 @@
       </div>
     </div>
     <div class="copyright">
-      <p style="margin: 0;">Anna 2018-2026. Design by OKHUB Viet Nam</p>
+      <p style="margin: 0;">Anna 2015-2026. Design by OKHUB Viet Nam</p>
     </div>
   </footer>
 </body>

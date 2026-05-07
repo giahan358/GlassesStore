@@ -868,75 +868,103 @@ const handleProductClick = function () {
      * Hàm lõi: Thu thập tất cả params và thực hiện AJAX
      */
     const performAutoFilter = () => {
-        const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-        // Thu thập giá trị từ các ô input/select hiện có
-        if (filterElements.keyword && filterElements.keyword.value.trim()) {
-            params.set('keyword', filterElements.keyword.value.trim());
-        }
-        if (filterElements.lsp && filterElements.lsp.value !== '0') {
-            params.set('lsp', filterElements.lsp.value);
-        }
-        if (filterElements.kieudang && filterElements.kieudang.value !== '0') {
-            params.set('kieudang', filterElements.kieudang.value);
-        }
-        if (filterElements.hang && filterElements.hang.value !== '0') {
-            params.set('hang', filterElements.hang.value);
-        }
+    // CHỈ thêm vào params nếu có giá trị thực (khác '0' và khác rỗng)
+    if (filterElements.keyword && filterElements.keyword.value.trim() !== "") {
+        params.set('keyword', filterElements.keyword.value.trim());
+    }
 
-        // Xử lý lọc giá (Chỉ lọc nếu nhập đủ cả 2)
-        const pFrom = filterElements.priceFrom?.value;
-        const pTo = filterElements.priceTo?.value;
-        if (pFrom && pTo && parseFloat(pFrom) < parseFloat(pTo)) {
-            params.set('khoanggia', `[${pFrom}-${pTo}]`);
-        }
+    // Kiểm tra lsp: không lấy giá trị '0' hoặc chuỗi rỗng
+    if (filterElements.lsp && filterElements.lsp.value && filterElements.lsp.value !== '0') {
+        params.set('lsp', filterElements.lsp.value);
+    }
 
-        params.delete('page'); // Reset về trang 1
+    // Kiểm tra kieudang: không lấy giá trị '0' hoặc chuỗi rỗng
+    if (filterElements.kieudang && filterElements.kieudang.value && filterElements.kieudang.value !== '0') {
+        params.set('kieudang', filterElements.kieudang.value);
+    }
 
-        const queryString = params.toString() ? '?' + params.toString() : '';
-        const newUrl = window.location.pathname + queryString;
+    if (filterElements.hang && filterElements.hang.value && filterElements.hang.value !== '0') {
+        params.set('hang', filterElements.hang.value);
+    }
 
-        // Cập nhật URL thanh địa chỉ
-        window.history.pushState({}, '', newUrl);
+    // Xử lý lọc giá
+    const pFrom = filterElements.priceFrom?.value;
+    const pTo = filterElements.priceTo?.value;
+    if (pFrom && pTo && parseFloat(pFrom) < parseFloat(pTo)) {
+        params.set('khoanggia', `[${pFrom}-${pTo}]`);
+    }
 
-        // Gọi AJAX tải sản phẩm với Debounce để tránh spam request
-        if (typeof loadProducts === 'function') {
-            console.log("Đang tự động tải sản phẩm:", queryString);
-            // Sử dụng debounce nếu có, hoặc gọi trực tiếp
-            if (typeof debounce === 'function') {
-                debounce(() => loadProducts(queryString || '?', true), 300)();
-            } else {
-                loadProducts(queryString || '?', true);
-            }
-        }
-    };
+    params.delete('page'); // Reset về trang 1
+
+    // Tạo Query String: Nếu params trống thì để rỗng, không để dấu ? lẻ loi
+    const queryString = params.toString() ? '?' + params.toString() : '';
+    const newUrl = window.location.pathname + queryString;
+
+    // Cập nhật URL thanh địa chỉ (AJAX - không load lại trang)
+    window.history.pushState({}, '', newUrl);
+
+    // Gọi AJAX tải sản phẩm
+    if (typeof loadProducts === 'function') {
+        loadProducts(queryString || '?', true);
+    }
+};
 
     /**
      * 2. Xử lý Mega Menu (Click Link là lọc luôn)
      */
     const setupMegaMenu = () => {
-        const megaLinks = document.querySelectorAll('.mega-filter-link');
-        
-        megaLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+    const megaLinks = document.querySelectorAll('.mega-filter-link');
+    
+    megaLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-                const lspId = this.getAttribute('data-lsp-id');
-                const kdId = this.getAttribute('data-kieudang-id');
+            const lspId = this.getAttribute('data-lsp-id');
+            const kdId = this.getAttribute('data-kieudang-id');
 
-                // Đồng bộ giá trị vào các ô Select ở trang danh mục (nếu có)[cite: 3]
-                if (lspId !== null && filterElements.lsp) filterElements.lsp.value = lspId;
-                if (kdId !== null && filterElements.kieudang) filterElements.kieudang.value = kdId;
+            // 1. Xóa giá trị cũ của tất cả các bộ lọc để đảm bảo "tách biệt"
+            if (filterElements.lsp) filterElements.lsp.value = "";
+            if (filterElements.kieudang) filterElements.kieudang.value = "";
+            if (filterElements.hang) filterElements.hang.value = "";
 
-                performAutoFilter();
+            // 2. Logic TÁCH BIỆT & LÀM SẠCH URL:
+            // Nhấn cái nào thì chỉ giữ lại 'name' của cái đó, xóa 'name' cái kia
+            if (lspId !== null) {
+                if (filterElements.lsp) {
+                    filterElements.lsp.name = "idLSP"; // Giữ name để gửi
+                    filterElements.lsp.value = lspId;
+                }
+                if (filterElements.kieudang) {
+                    filterElements.kieudang.removeAttribute('name'); // Xóa name để lsp= không hiện lên URL
+                }
+            } else if (kdId !== null) {
+                if (filterElements.kieudang) {
+                    filterElements.kieudang.name = "idKieuDang"; // Giữ name để gửi
+                    filterElements.kieudang.value = kdId;
+                }
+                if (filterElements.lsp) {
+                    filterElements.lsp.removeAttribute('name'); // Xóa name để kieudang= không hiện lên URL
+                }
+            }
 
-                // Cuộn nhẹ xuống danh sách sản phẩm
-                const listAnchor = document.getElementById('list-product');
-                if (listAnchor) listAnchor.scrollIntoView({ behavior: 'smooth' });
-            });
+            // 3. Chạy AJAX (Hàm này của bạn sẽ thực hiện pushState và load dữ liệu)
+            performAutoFilter();
+
+            // 4. Quan trọng: Trả lại 'name' sau khi AJAX chạy xong để Sidebar vẫn hoạt động bình thường
+            setTimeout(() => {
+                if (filterElements.lsp) filterElements.lsp.name = "idLSP";
+                if (filterElements.kieudang) filterElements.kieudang.name = "idKieuDang";
+            }, 100);
+
+            // Cuộn xuống danh sách
+            const listAnchor = document.getElementById('list-product');
+            if (listAnchor) listAnchor.scrollIntoView({ behavior: 'smooth' });
         });
-    };
+    });
+};
 
     /**
      * 3. Xử lý các ô Select/Input (Thay đổi là lọc luôn)
@@ -1141,7 +1169,8 @@ const handleProductClick = function () {
     <div class="main justify-content-center d-flex">
       <div class="best-seller text-center">
         
-        <!--<div class="row my-5" style="max-height: 380px;display: flex;">
+        <div class="row my-5" style="max-height: 380px;display: flex;">
+        <h1 style="font-family: Sigmar; font-weight: 800; color: #555; width: 40%;">BEST SELLER</h1>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-5 w-100">
               @foreach($top4Product as $sp)
                 @php
@@ -1178,12 +1207,11 @@ const handleProductClick = function () {
                 </div>
             @endforeach
           </div>
-        </div>-->
-
+        </div>
       </div>
 
     </div>
-    <div class="banner-small " style="margin-top: 150px;">
+    <div class="banner-small " style="margin-top: 200px;">
       <div class="bnsm"><img src="/client/img/small-banner1.png" class="img-fluid w-100"></div>
       <div class="bnsm"><img src="/client/img/small-banner2.png" class="img-fluid w-100"></div>
     </div>
@@ -1392,50 +1420,45 @@ const handleProductClick = function () {
     </div>
   </div>
   <div class="container-custom">
-    <a><i class="fa-solid fa-shield-check fa-beat"></i>
+    <a>
       <p>Bảo hành trọn đời</p>
     </a>
-    <a><i class="fa-solid fa-flower-daffodil fa-beat"></i>
+    <a>
       <p>Đo mắt miễn phí</p>
     </a>
-    <a><i class="fa-solid fa-rotate fa-spin"></i>
+    <a>
       <p>Thu cũ đổi mới</p>
     </a>
-    <a><i class="fa-solid fa-spray-can-sparkles fa-shake"></i>
+    <a>
       <p>Vệ sinh & Bảo quản</p>
     </a>
   </div>
-  <div class="d-flex " style="padding: 0 5%;">
-    <div style="width: 40%;"><img src="/client/img/Artboard-2-copy-5.png" alt="" class="img-fluid w-100"></div>
-    <div style="padding-left: 50px;width: 60%;">
-      <h2 style="padding: 30px;background-color: #adf1f1;border-top-left-radius: 30px;border-top-right-radius: 30px;border-bottom-right-radius: 30px;color: #131414;font-weight: 800;">CHỌN KÍNH PHÙ HỢP VỚI BẠN</h2>
-      <div class="choiceglasses" >
-        <a href="#">
-          <h3>CHỌN KÍNH THEO KHUÔN MẶT</h3>
-          <p style="margin: 0;width: 60%;">Lựa chọn kính theo hình dáng khuôn mặt và sở thích cá nhân của bạn</p>
-        </a>
-        <div style="display: block; text-align: center;font-size: 50px;transform: translateX(-100px);color: #413f3f;"><i class="fa-solid fa-arrow-right" style="transition: transform 0.5s ease;"></i></div>
-      </div>
-      <div class="choiceglasses" >
-        <a href="#">
-          <h3>CHỌN KÍNH THEO PHONG CÁCH</h3>
-          <p style="margin: 0;width: 60%;">Lựa chọn kính theo hình dáng khuôn mặt và sở thích cá nhân của bạn</p>
-        </a>
-        <div style="display: block; text-align: center;font-size: 50px;transform: translateX(-100px);color: #413f3f;"><i class="fa-solid fa-arrow-right" style="transition: transform 0.5s ease;"></i></div>
-      </div><div class="choiceglasses" >
-        <a href="#">
-          <h3>CHỌN KÍNH THEO CÔNG VIỆC</h3>
-          <p style="margin: 0;width: 60%;">Lựa chọn kính theo hình dáng khuôn mặt và sở thích cá nhân của bạn</p>
-        </a>
-        <div style="display: block; text-align: center;font-size: 50px;transform: translateX(-100px);color: #413f3f;"><i class="fa-solid fa-arrow-right" style="transition: transform 0.5s ease;"></i></div>
-      </div><div class="choiceglasses" >
-        <a href="#">
-          <h3>CHỌN KÍNH THEO SỞ THÍCH</h3>
-          <p style="margin: 0;width: 60%;">Lựa chọn kính theo hình dáng khuôn mặt và sở thích cá nhân của bạn</p>
-        </a>
-        <div style="display: block; text-align: center;font-size: 50px;transform: translateX(-100px);color: #413f3f;"><i class="fa-solid fa-arrow-right" style="transition: transform 0.5s ease;"></i></div>
-      </div>
+  <div class="d-flex" style="padding: 0 5%; font-family: 'Segoe UI', Roboto, Arial, sans-serif;">
+    <div style="width: 40%;">
+        <img src="/client/img/Artboard-2-copy-5.png" alt="Anna Eyewear" class="img-fluid w-100">
     </div>
+
+    <div style="padding-left: 50px; width: 60%;">
+        <h2 style="padding: 25px 30px; background-color: #daebeb; border-top-left-radius: 30px; border-top-right-radius: 30px; border-bottom-right-radius: 30px; color: #54c4c4; font-weight: 800; text-transform: uppercase; margin-bottom: 25px; font-size: 40px;">
+            VŨ TRỤ TRUYỀN THÔNG
+        </h2>
+        
+        <div style="color: #413f3f; line-height: 1.8; font-size: 20px;">
+            <p style="font-weight: 700; font-size: 20px; margin-bottom: 22px; color: #333;">
+             <i class="fa-solid fa-arrow-right-long"></i> Kính mắt Anna chắc không còn quá xa lạ với giới trẻ nữa. Đây là kênh thông tin mua sắm và giải trí dành cho giới trẻ, là “món ăn tinh thần” hằng ngày không thể thiếu của mỗi người trẻ.
+            </p>
+            
+            <p style="margin-bottom: 15px; font-weight: 700; font-size: 20px; margin-bottom: 20px; color: #333;">
+                <i class="fa-solid fa-arrow-right-long"></i> Được thành lập từ năm 2015, trải qua hơn 11 năm phát triển kính mắt Anna đã, đang và sẽ chiếm vị trí không thể thiếu đối với các bạn trẻ. 
+            </p>
+            
+            <p  style="margin-bottom: 15px; font-weight: 700; font-size: 20px; margin-bottom: 20px; color: #333;">
+                <i class="fa-solid fa-arrow-right-long"></i> Cập nhật thông tin thời trang nhanh chóng và phù hợp với thị hiếu của khán giả thông qua các mạng xã hội như 
+                <span style="font-weight: 600; color: #55d5d2; font-size: 22px;">Facebook, Tiktok, Instagram, Youtube</span>, kính mắt Anna là lựa chọn hàng đầu cho những ai muốn tận hưởng các bài viết, video vừa mang tính giải trí mà vẫn có đầy đủ thông tin cần thiết.
+            </p>
+        </div>
+    </div>
+</div>
 
   </div>
   <!-- Footer -->
@@ -1462,11 +1485,9 @@ const handleProductClick = function () {
         <div class="product-info">
           <label for="">Sản phẩm</label>
           <ul>
-            <li><a href="#">The Titan</a></li>
             <li><a href="#">Gọng Kính</a></li>
-            <li><a href="#">Tròng Kính</a></li>
             <li><a href="#">Kính râm</a></li>
-            <li><a href="#">Kính râm trẻ em</a></li>
+            <li><a href="#">Kính mát</a></li>
           </ul>
         </div>
         <div class="purchase-policy">
@@ -1493,7 +1514,7 @@ const handleProductClick = function () {
       </div>
     </div>
     <div class="copyright">
-      <p style="margin: 0;">Anna 2018-2026. Design by OKHUB Viet Nam</p>
+      <p style="margin: 0;">Anna 2015-2026. Design by OKHUB Viet Nam</p>
     </div>
   </footer>
 

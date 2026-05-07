@@ -198,12 +198,17 @@ public function update(Request $request)
         $validator = Validator::make($request->all(), [
             'hoTen' => 'required|string|max:255',
             'soDienThoai' => 'required|digits:10',
-            'password' => 'nullable|min:6', 
+            'password' => [
+            'nullable',
+            'min:6',
+            'regex:/[@$!%*?&]/' 
+        ],
         ], [
             'hoTen.required' => 'Họ tên không được để trống.',
             'soDienThoai.required' => 'Số điện thoại không được để trống.',
             'soDienThoai.digits' => 'Số điện thoại phải bao gồm đúng 10 chữ số.',
             'password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự.',
+            'password.regex' => 'Mật khẩu phải bao gồm ít nhất một ký tự đặc biệt (@$!%*?&).',
         ]);
 
         if ($validator->fails()) {

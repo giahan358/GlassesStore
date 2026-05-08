@@ -313,13 +313,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Xử lý đổ dữ liệu vào Modal Sửa khi nhấn nút .btn-edit
-    const editButtons = document.querySelectorAll('.btn-edit');
+    const editButtons = document.querySelectorAll('.edit-btn');
     editButtons.forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
-            const ten = this.dataset.ten;
+            const ten = this.dataset.tenlsp;   
             const mota = this.dataset.mota;
-            const status = this.dataset.status;
+            const status = this.dataset.trangthai;
 
             const form = document.getElementById('editTypeProductForm');
             if (form) {

@@ -333,7 +333,6 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
     <button class="bg-white border border-0 p-2 rounded d-flex justify-content-between" type="button" id="btn-diachi" 
             data-bs-toggle="modal" data-bs-target="#accountUpdateModal">
         <div id="hienThiDiachi" class="text-break">
-            {{-- Kiểm tra địa chỉ, nếu không có thì hiện thông báo nhắc chọn --}}
             @if($user && $user->getIdNguoiDung())
                 {{ $user->getIdNguoiDung()->getDiaChi() ?? 'Chưa có địa chỉ, vui lòng cập nhật' }}
             @else
@@ -478,17 +477,32 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
             </div>
             <hr>
            <div id="listHoTenContainer">
-            @php $seenNames = []; @endphp
+    @php
+        $hoTenMacDinh = ($user && $user->getIdNguoiDung()) ? trim($user->getIdNguoiDung()->getHoTen()) : '';
+    @endphp
+    <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center bg-light">
+        <div class="flex-grow-1">
+            <input class="form-check-input" type="radio" name="radioHoTen" id="defaultUserRadio" 
+                   value="{{ $hoTenMacDinh }}" checked>
+            <label class="form-check-label w-100 fw-bold" for="defaultUserRadio">
+                {{ !empty($hoTenMacDinh) ? $hoTenMacDinh : 'Thông tin mặc định' }} 
+                <span class="badge bg-primary ms-2">Mặc định</span>
+            </label>
+        </div>
+    </div>
+    @php 
+        $seenNames = !empty($hoTenMacDinh) ? [$hoTenMacDinh] : []; 
+    @endphp
     @foreach($listDiaChi as $dc)
         @php $hoTen = trim($dc->getHoTen()); @endphp
         @if(!empty($hoTen) && !in_array($hoTen, $seenNames))
             @php $seenNames[] = $hoTen; @endphp
-        <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1">
-                <input class="form-check-input" type="radio" name="radioHoTen" value="{{ $hoTen }}">
-                <label class="form-check-label w-100">{{ $hoTen }}</label>
+            <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                    <input class="form-check-input" type="radio" name="radioHoTen" value="{{ $hoTen }}" id="hoTen_{{ $loop->index }}">
+                    <label class="form-check-label w-100" for="hoTen_{{ $loop->index }}">{{ $hoTen }}</label>
+                </div>
             </div>
-        </div>
         @endif
     @endforeach
 </div>
@@ -515,18 +529,35 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
                 </div>
             </div>
             <hr>
-            <div id="listSDTContainer">
-       @php $seenPhones = []; @endphp
+           <div id="listSDTContainer">
+    @php
+        // Lấy giá trị mặc định để dùng chung cho cả Radio mặc định và check trùng
+        $sdtMacDinh = ($user && $user->getIdNguoiDung()) ? trim($user->getIdNguoiDung()->getSoDienThoai()) : '';
+    @endphp
+
+    <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center bg-light">
+        <div class="flex-grow-1">
+            <input class="form-check-input" type="radio" name="radioSDT" id="defaultSDTRadio" 
+                   value="{{ $sdtMacDinh }}" checked>
+            <label class="form-check-label w-100 fw-bold" for="defaultSDTRadio">
+                {{ !empty($sdtMacDinh) ? $sdtMacDinh : 'Số điện thoại mặc định' }} 
+                <span class="badge bg-primary ms-2">Mặc định</span>
+            </label>
+        </div>
+    </div>
+    @php 
+        $seenPhones = !empty($sdtMacDinh) ? [$sdtMacDinh] : []; 
+    @endphp
     @foreach($listDiaChi as $dc)
         @php $sdt = trim($dc->getSoDienThoai()); @endphp
         @if(!empty($sdt) && !in_array($sdt, $seenPhones))
             @php $seenPhones[] = $sdt; @endphp
-        <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1">
-                <input class="form-check-input" type="radio" name="radioSDT" value="{{ $sdt }}">
-                <label class="form-check-label w-100">{{ $sdt }}</label>
+            <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                    <input class="form-check-input" type="radio" name="radioSDT" value="{{ $sdt }}" id="sdt_{{ $loop->index }}">
+                    <label class="form-check-label w-100" for="sdt_{{ $loop->index }}">{{ $sdt }}</label>
+                </div>
             </div>
-        </div>
         @endif
     @endforeach
 </div>
@@ -558,17 +589,35 @@ $(document).on('change', 'input[name="radioDefault"]', function() {
             </div>
             <hr>
             <div id="listDiaChiContainer">
-   @php $seenAddresses = []; @endphp
+                <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center bg-light">
+        <div id="listDiaChiContainer">
+    @php
+        $diaChiMacDinh = ($user && $user->getIdNguoiDung()) ? $user->getIdNguoiDung()->getDiaChi() : '';
+        // Đưa địa chỉ mặc định vào danh sách đã thấy ngay từ đầu
+        $seenAddresses = [trim($diaChiMacDinh)]; 
+    @endphp
+
+    <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center bg-light">
+        <div class="flex-grow-1">
+            <input class="form-check-input" type="radio" name="radioDefault" id="defaultDiaChiRadio" 
+                   value="{{ $diaChiMacDinh }}" checked>
+            <label class="form-check-label w-100 fw-bold" for="defaultDiaChiRadio">
+                {{ !empty($diaChiMacDinh) ? $diaChiMacDinh : 'Địa chỉ mặc định' }}
+                <span class="badge bg-primary ms-2">Mặc định</span>
+            </label>
+        </div>
+    </div>
+
     @foreach($listDiaChi as $dc)
         @php $diachi = trim($dc->getDiaChi()); @endphp
         @if(!empty($diachi) && !in_array($diachi, $seenAddresses))
             @php $seenAddresses[] = $diachi; @endphp
-        <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1">
-                <input class="form-check-input" type="radio" name="radioDefault" value="{{ $diachi }}">
-                <label class="form-check-label w-100">{{ $diachi }}</label>
+            <div class="form-check py-2 border-bottom d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                    <input class="form-check-input" type="radio" name="radioDefault" value="{{ $diachi }}" id="diachi_{{ $loop->index }}">
+                    <label class="form-check-label w-100" for="diachi_{{ $loop->index }}">{{ $diachi }}</label>
+                </div>
             </div>
-        </div>
         @endif
     @endforeach
 </div>

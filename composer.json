@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-mysqli": "*", 
+        "ext-mysqlnd": "*",
         "firebase/php-jwt": "^6.11",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^3.11",

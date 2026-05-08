@@ -1,0 +1,1 @@
+const t=document.querySelector(".toggle-btn"),e=document.querySelector("#icon");t.addEventListener("click",function(){document.querySelector("#sidebar").classList.toggle("expand"),e.classList.toggle("bx-chevrons-right"),e.classList.toggle("bx-chevrons-left")});

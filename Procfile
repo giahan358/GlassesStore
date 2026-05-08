@@ -1,3 +1,1 @@
-web: php artisan serve --host=0.0.0.0 --port=$PORT
-worker: php artisan queue:work
-scheduler: php artisan schedule:work
+web: (php artisan queue:work --iterations=50 &) && (while true; do php artisan schedule:run; sleep 60; done &) && php artisan serve --host=0.0.0.0 --port=$PORT

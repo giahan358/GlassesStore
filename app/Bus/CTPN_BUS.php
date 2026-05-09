@@ -31,7 +31,7 @@ class CTPN_BUS
     }
 
     private function getHighestPurchasePrice($idSP): float {
-        $sql = "SELECT MAX(giaNhap) as maxGiaNhap FROM CTPN WHERE idSP = ?";
+        $sql = "SELECT MAX(giaNhap) as maxGiaNhap FROM ctpn WHERE idSP = ?";
         $rs = database_connection::executeQuery($sql, $idSP);
         if ($row = $rs->fetch_assoc()) {
             return (float)$row['maxGiaNhap'];

@@ -68,7 +68,7 @@ class NguoiDung_BUS{
         return $this->nguoiDungDAO->searchByTinh($idTinh);
     }
     public function checkExistingUser($sdt) {
-        return DB::table('NGUOIDUNG')
+        return DB::table('nguoidung')
             ->where('SODIENTHOAI', $sdt)
             ->exists();
     }

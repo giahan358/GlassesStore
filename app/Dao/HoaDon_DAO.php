@@ -16,7 +16,7 @@ class HoaDon_DAO{
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM HoaDon");
+        $rs = database_connection::executeQuery("SELECT * FROM hoadon");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createHoaDonModel($row);
             array_push($list, $model);
@@ -76,7 +76,7 @@ class HoaDon_DAO{
     public function search(string $condition, array $columnNames): array
     {
         $column = $columnNames[0];
-        $query = "SELECT * FROM HoaDon WHERE $column LIKE ?";
+        $query = "SELECT * FROM hoadon WHERE $column LIKE ?";
         $args = ["%" . $condition . "%"];
         $rs = database_connection::executeQuery($query, ...$args);
         $cartsList = [];

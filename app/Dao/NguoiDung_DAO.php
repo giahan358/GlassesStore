@@ -16,7 +16,7 @@ class NguoiDung_DAO {
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM NGUOIDUNG");
+        $rs = database_connection::executeQuery("SELECT * FROM nguoidung");
         while($row = $rs->fetch_assoc()) {
             $model = $this->createNguoiDungModel($row);
             $list[] = $model;
@@ -54,7 +54,7 @@ class NguoiDung_DAO {
     }
     public function getAll() : array{
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM NGUOIDUNG");
+        $rs = database_connection::executeQuery("SELECT * FROM nguoidung");
         while($row = $rs->fetch_assoc()) {
             $model = $this->createNguoiDungModel($row);
             array_push($list, $model);
@@ -62,7 +62,7 @@ class NguoiDung_DAO {
         return $list;
     }
     public function getById($id) {
-        $query = "SELECT * FROM NGUOIDUNG WHERE id = ?";
+        $query = "SELECT * FROM nguoidung WHERE id = ?";
         $result = database_connection::executeQuery($query, $id);
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -74,7 +74,7 @@ class NguoiDung_DAO {
     }
     public function insert($e)
     {
-        $query = "INSERT INTO NGUOIDUNG (HOTEN, NGAYSINH, GIOITINH, DIACHI, IDTINH, SODIENTHOAI, CCCD, TRANGTHAIHD) 
+        $query = "INSERT INTO nguoidung (HOTEN, NGAYSINH, GIOITINH, DIACHI, IDTINH, SODIENTHOAI, CCCD, TRANGTHAIHD) 
         VALUES (?,?,?,?,?,?,?,?)";
         $args = [ 
             $e->getHoTen(), 
@@ -91,14 +91,14 @@ class NguoiDung_DAO {
     }
     public function update($e): int
     {
-        $query = "UPDATE NGUOIDUNG SET HOTEN = ?, NGAYSINH = ?, GIOITINH = ?, DIACHI = ?, IDTINH = ?, SODIENTHOAI = ?, CCCD = ?, TRANGTHAIHD = ? WHERE ID = ?";
+        $query = "UPDATE nguoidung SET HOTEN = ?, NGAYSINH = ?, GIOITINH = ?, DIACHI = ?, IDTINH = ?, SODIENTHOAI = ?, CCCD = ?, TRANGTHAIHD = ? WHERE ID = ?";
         $args = [$e->getHoTen(), $e->getNgaySinh(), $e->getGioiTinh(), $e->getDiaChi(), $e->getTinh()->getId(), $e->getSoDienThoai(), $e->getCccd(), $e->getTrangThaiHD(), $e->getId()];
         $rs = database_connection::executeUpdate($query, ...$args);
         return is_int($rs) ? $rs : 0;
     }
     public function controlDelete($id, $active): int
     {
-        $query = "UPDATE NGUOIDUNG SET trangThaiHD = ? WHERE ID = ?";
+        $query = "UPDATE nguoidung SET trangThaiHD = ? WHERE ID = ?";
         $args = [$active, $id];
         $result = database_connection::executeUpdate($query, ...$args);
         return is_int($result) ? $result : 0;
@@ -110,14 +110,14 @@ class NguoiDung_DAO {
         }
         $query = "";
         if ($columnNames === null || count($columnNames) === 0) {
-            $query = "SELECT * FROM NGUOIDUNG WHERE id LIKE ? OR HOTEN LIKE ? OR NGAYSINH LIKE ? OR GIOITINH LIKE ? OR DIACHI LIKE ? OR IDTINH LIKE ? OR SODIENTHOAI LIKE ? OR CCCD LIKE ? OR TRANGTHAIHD LIKE ?";
+            $query = "SELECT * FROM nguoidung WHERE id LIKE ? OR HOTEN LIKE ? OR NGAYSINH LIKE ? OR GIOITINH LIKE ? OR DIACHI LIKE ? OR IDTINH LIKE ? OR SODIENTHOAI LIKE ? OR CCCD LIKE ? OR TRANGTHAIHD LIKE ?";
             $args = array_fill(0, 9, "%" . $condition . "%");
         } else if (count($columnNames) === 1) {
             $column = $columnNames[0];
-            $query = "SELECT * FROM NGUOIDUNG WHERE $column LIKE ?";
+            $query = "SELECT * FROM nguoidung WHERE $column LIKE ?";
             $args = ["%" . $condition . "%"];
         } else {
-            $query = "SELECT * FROM NGUOIDUNG WHERE " . implode(" LIKE ? OR ", $columnNames) . " LIKE ?";
+            $query = "SELECT * FROM nguoidung WHERE " . implode(" LIKE ? OR ", $columnNames) . " LIKE ?";
             $args = array_fill(0, count($columnNames), "%" . $condition . "%");
         }
         $rs = database_connection::executeQuery($query, ...$args);
@@ -133,7 +133,7 @@ class NguoiDung_DAO {
     }
     public function searchByTinh($idTinh) {
         $list = [];
-        $query = "SELECT * FROM NguoiDung WHERE IDTINH = ?";
+        $query = "SELECT * FROM nguoidung WHERE IDTINH = ?";
         $rs = database_connection::executeQuery($query, $idTinh);
         while($row = $rs->fetch_assoc()) {
             $model = $this->createNguoiDungModel($row);
@@ -142,7 +142,7 @@ class NguoiDung_DAO {
         return $list;
     }
     public function getBySDT($sdt) {
-        $query = "SELECT * FROM NGUOIDUNG WHERE SODIENTHOAI = ?";
+        $query = "SELECT * FROM nguoidung WHERE SODIENTHOAI = ?";
         $result = database_connection::executeQuery($query, $sdt);
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();

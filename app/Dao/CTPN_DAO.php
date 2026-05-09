@@ -14,7 +14,7 @@ class CTPN_DAO implements DAOInterface {
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM CTPN");
+        $rs = database_connection::executeQuery("SELECT * FROM ctpn");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createCTPNModel($row);
             array_push($list, $model);
@@ -38,7 +38,7 @@ class CTPN_DAO implements DAOInterface {
     }
 
     public function getById($idPN, $idSP): ?CTPN {
-        $sql = "SELECT * FROM CTPN WHERE idPN = ? AND idSP = ?";
+        $sql = "SELECT * FROM ctpn WHERE idPN = ? AND idSP = ?";
         $rs = database_connection::executeQuery($sql, $idPN, $idSP);
         if ($row = $rs->fetch_assoc()) {
             return $this->createCTPNModel($row);
@@ -48,7 +48,7 @@ class CTPN_DAO implements DAOInterface {
 
     public function getByPhieuNhapId($idPN) {
         $list = [];
-        $sql = "SELECT * FROM CTPN WHERE idPN = ?";
+        $sql = "SELECT * FROM ctpn WHERE idPN = ?";
         $rs = database_connection::executeQuery($sql, $idPN);
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createCTPNModel($row);
@@ -88,7 +88,7 @@ class CTPN_DAO implements DAOInterface {
     }
     
     public function insert($e): int {
-        $sql = "INSERT INTO CTPN (idPN, idSP, soLuong, giaNhap, phanTramLN, TRANGTHAIHD) 
+        $sql = "INSERT INTO ctpn (idPN, idSP, soLuong, giaNhap, phanTramLN, TRANGTHAIHD) 
         VALUES (?, ?, ?, ?, ?, 1)";
         $args = [
             $e->getIdPN()->getId(), 
@@ -110,7 +110,7 @@ class CTPN_DAO implements DAOInterface {
 {
     // 1. Loại bỏ thoiGianBaoHanh ra khỏi câu lệnh SET
     // Lưu ý: Đảm bảo tên cột khớp với Database (TENSANPHAM, IDHANG... hoặc tenSanPham, idHang...)
-    $sql = "UPDATE SanPham SET 
+    $sql = "UPDATE sanpham SET 
                 tenSanPham = ?, 
                 idHang = ?, 
                 idLSP = ?, 
@@ -151,17 +151,17 @@ class CTPN_DAO implements DAOInterface {
         }
         $idPN = $ids[0];
         $idSP = $ids[1];
-        $sql = "DELETE FROM CTPN WHERE idPN = ? AND idSP = ?";
+        $sql = "DELETE FROM ctpn WHERE idPN = ? AND idSP = ?";
         return database_connection::executeUpdate($sql, $idPN, $idSP);
     }
 
     public function deleteByPhieuNhapId($idPN): int {
-        $sql = "DELETE FROM CTPN WHERE idPN = ?";
+        $sql = "DELETE FROM ctpn WHERE idPN = ?";
         return database_connection::executeUpdate($sql, $idPN);
     }
 
     public function search(string $condition, array $columnNames): array {
-        $sql = "SELECT * FROM CTPN WHERE ";
+        $sql = "SELECT * FROM ctpn WHERE ";
         $whereClauses = [];
         foreach ($columnNames as $column) {
             $whereClauses[] = "$column LIKE ?";
@@ -181,7 +181,7 @@ class CTPN_DAO implements DAOInterface {
 
     public function getGiaBanCaoNhatByIDSP(int $idSP): ?float {
         $sql = "SELECT GIANHAP, PHANTRAMLN 
-                FROM CTPN 
+                FROM ctpn 
                 WHERE IDSP = ? 
                 ORDER BY PHANTRAMLN DESC 
                 LIMIT 1";

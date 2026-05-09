@@ -19,7 +19,7 @@ class PhieuNhap_DAO
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM PHIEUNHAP");
+        $rs = database_connection::executeQuery("SELECT * FROM phieunhap");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createPhieuNhapModel($row);
             $list[] = $model;
@@ -39,7 +39,7 @@ class PhieuNhap_DAO
     public function getAll(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM PHIEUNHAP");
+        $rs = database_connection::executeQuery("SELECT * FROM phieunhap");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createPhieuNhapModel($row);
             array_push($list, $model);
@@ -48,7 +48,7 @@ class PhieuNhap_DAO
     }
     public function getById($id)
     {
-        $query = "SELECT * FROM PHIEUNHAP WHERE ID = ?";
+        $query = "SELECT * FROM phieunhap WHERE ID = ?";
         $result = database_connection::executeQuery($query, $id);
         if ($result->num_rows > 0) {
             return $this->createPhieuNhapModel($result->fetch_assoc());
@@ -57,14 +57,14 @@ class PhieuNhap_DAO
     }
     public function insert($e)
     {
-        $query = "INSERT INTO PHIEUNHAP (id, idNCC, tongTien, ngayTao, idNhanVien, trangThaiHD) VALUES (?,?,?,?,?,?)";
+        $query = "INSERT INTO phieunhap (id, idNCC, tongTien, ngayTao, idNhanVien, trangThaiHD) VALUES (?,?,?,?,?,?)";
         $args = [$e->getId(), $e->getIdNCC()->getIdNCC(), $e->getTongTien(), $e->getNgayTao(), $e->getIdNhanVien()->getId(), $e->getTrangThaiPN()];
         $rs = database_connection::executeQuery($query, ...$args);
         return is_int($rs) ? $rs : 0;
 
     }
     public function getLastPN() {
-        $query = "SELECT * FROM PHIEUNHAP ORDER BY id DESC LIMIT 1";
+        $query = "SELECT * FROM phieunhap ORDER BY id DESC LIMIT 1";
         $result = database_connection::executeQuery($query);
         if ($result->num_rows > 0) {
             return $this->createPhieuNhapModel($result->fetch_assoc());
@@ -73,20 +73,20 @@ class PhieuNhap_DAO
     }
     public function update($e): int
     {
-        $query = "UPDATE PHIEUNHAP SET idNCC = ?, tongTien = ?, ngayTao = ?, idNhanVien = ?, trangThaiHD = ? WHERE id = ?";
+        $query = "UPDATE phieunhap SET idNCC = ?, tongTien = ?, ngayTao = ?, idNhanVien = ?, trangThaiHD = ? WHERE id = ?";
         $args = [$e->getIdNCC()->getIdNCC(), $e->getTongTien(), $e->getNgayTao(), $e->getIdNhanVien()->getId(), $e->getTrangThaiPN(), $e->getId()];
         $rs = database_connection::executeUpdate($query, ...$args);
         return is_int($rs) ? $rs : 0;
     }
     public function delete(int $id): int
     {
-        $query = "DELETE FROM PHIEUNHAP WHERE id = ?";
+        $query = "DELETE FROM phieunhap WHERE id = ?";
         $rs = database_connection::executeUpdate($query, $id);
         return is_int($rs) ? $rs : 0;
     }
     public function exists(int $id): bool
     {
-        $query = "SELECT COUNT(*) as count FROM PHIEUNHAP WHERE id = ?";
+        $query = "SELECT COUNT(*) as count FROM phieunhap WHERE id = ?";
         $rs = database_connection::executeQuery($query, $id);
         $row = $rs->fetch_assoc();
         return $row['count'] > 0;
@@ -104,7 +104,7 @@ class PhieuNhap_DAO
             : $columnNames;
 
         // Xây dựng câu lệnh SQL với các cột được chỉ định
-        $query = "SELECT * FROM PHIEUNHAP WHERE " . implode(" LIKE ? OR ", $columns) . " LIKE ?";
+        $query = "SELECT * FROM phieunhap WHERE " . implode(" LIKE ? OR ", $columns) . " LIKE ?";
 
         // Mảng chứa các tham số tìm kiếm
         $args = array_fill(0, count($columns), "%" . $condition . "%");

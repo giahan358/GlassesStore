@@ -12,7 +12,7 @@ use App\Services\database_connection;
 class CTGH_DAO {
     public function getByIDGH ($idgh) {
         $list = [];
-        $query = "SELECT * FROM CTGH where IDGH = ?";
+        $query = "SELECT * FROM ctgh where IDGH = ?";
         $rs = database_connection::executeQuery($query, $idgh);
         while($row = $rs->fetch_assoc()) {
             $model = $this->createCTGHModel($row);
@@ -27,7 +27,7 @@ class CTGH_DAO {
         return database_connection::executeUpdate($query, ...$args);
     }
     public function deleteCTGH($idgh, $idsp) {
-        $query = "DELETE FROM CTGH WHERE IDGH = ? AND IDSP = ?";
+        $query = "DELETE FROM ctgh WHERE IDGH = ? AND IDSP = ?";
         $args = [$idgh, $idsp];
         return database_connection::executeUpdate($query, ...$args);
     }
@@ -37,7 +37,7 @@ class CTGH_DAO {
         return new CTGH($idgh, $idsp, $row['SOLUONG']);
     }
     public function getCTGHByIDGHAndIDSP($idGH, $idsp) {
-        $query = "SELECT * FROM CTGH WHERE IDGH = ? AND IDSP = ?";
+        $query = "SELECT * FROM ctgh WHERE IDGH = ? AND IDSP = ?";
         $args = [$idGH, $idsp];
         $result = database_connection::executeQuery($query, ...$args);
         
@@ -50,7 +50,7 @@ class CTGH_DAO {
         return null;
     }
     public function updateCTGH($model) {
-        $query = "UPDATE CTGH SET SOLUONG = ? WHERE IDGH = ? AND IDSP = ?";
+        $query = "UPDATE ctgh SET SOLUONG = ? WHERE IDGH = ? AND IDSP = ?";
         $args = [$model->getSoLuong(), $model->getIdGH()->getIdGH(), $model->getIdSP()->getId()];
         $result = database_connection::executeUpdate($query, ...$args);
         return is_int($result) ? $result : 0;  

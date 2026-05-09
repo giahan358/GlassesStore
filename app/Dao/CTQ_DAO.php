@@ -16,7 +16,7 @@ class CTQ_DAO implements DAOInterface {
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM CTQ");
+        $rs = database_connection::executeQuery("SELECT * FROM ctq");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createCTQModel($row);
             array_push($list, $model);
@@ -31,7 +31,7 @@ class CTQ_DAO implements DAOInterface {
     }
     public function getAll() : array {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM CTQ");
+        $rs = database_connection::executeQuery("SELECT * FROM ctq");
         while($row = $rs->fetch_assoc()) {
             $model = $this->createCTQModel($row);
             array_push($list, $model);
@@ -40,7 +40,7 @@ class CTQ_DAO implements DAOInterface {
     }
     public function getById($id) {
         $list = [];
-        $query = "SELECT * FROM CTQ WHERE idQuyen = ?";
+        $query = "SELECT * FROM ctq WHERE idQuyen = ?";
         $rs = database_connection::executeQuery($query, $id);
         while($row = $rs->fetch_assoc()) {
             $model = $this->createCTQModel($row);
@@ -54,21 +54,21 @@ class CTQ_DAO implements DAOInterface {
         return database_connection::executeQuery($query, ...$args);
     }
     public function update($model): int {
-        $query = "UPDATE CTQ SET idChucNang = ?, trangThaiHD = ? WHERE idQuyen = ?";
+        $query = "UPDATE ctq SET idChucNang = ?, trangThaiHD = ? WHERE idQuyen = ?";
         $args = [$model->getIdChucNang()->getId(), $model->getTrangThaiHD(), $model->getIdQuyen()->getId()];
         $result = database_connection::executeUpdate($query, ...$args);
         return is_int($result) ? $result : 0;  
     }
     public function delete(int $id): int
     {
-        $query = "UPDATE CTQ SET trangThaiHD = 0 WHERE idQuyen = ?";
+        $query = "UPDATE ctq SET trangThaiHD = 0 WHERE idQuyen = ?";
         $result = database_connection::executeUpdate($query, ...[$id]);
         
         return is_int($result) ? $result : 0;
     }
     public function deleteByIdQuyenAndIdChucNang($idQuyen, $idChucNang): int
     {
-        $query = "UPDATE CTQ SET trangThaiHD = false WHERE idQuyen = ? AND idChucNang = ?";
+        $query = "UPDATE ctq SET trangThaiHD = false WHERE idQuyen = ? AND idChucNang = ?";
         $result = database_connection::executeUpdate($query, $idQuyen, $idChucNang);
         
         return is_int($result) ? $result : 0;
@@ -76,7 +76,7 @@ class CTQ_DAO implements DAOInterface {
 
     public function deleteByQuyenId($quyenId): int
     {
-        $query = "UPDATE CTQ SET trangThaiHD = false WHERE idQuyen = ?";
+        $query = "UPDATE ctq SET trangThaiHD = false WHERE idQuyen = ?";
         $result = database_connection::executeUpdate($query, $quyenId);
         
         return is_int($result) ? $result : 0;
@@ -89,14 +89,14 @@ class CTQ_DAO implements DAOInterface {
         }
         $query = "";
         if ($columnNames === null || count($columnNames) === 0) {
-            $query = "SELECT * FROM CTQ WHERE idquyen LIKE ? OR idChucNang LIKE ? OR thaoTac LIKE ? OR trangThaiHD LIKE ? ";
+            $query = "SELECT * FROM ctq WHERE idquyen LIKE ? OR idChucNang LIKE ? OR thaoTac LIKE ? OR trangThaiHD LIKE ? ";
             $args = array_fill(0,  4, "%" . $condition . "%");
         } else if (count($columnNames) === 1) {
             $column = $columnNames[0];
-            $query = "SELECT * FROM CTQ WHERE $column LIKE ?";
+            $query = "SELECT * FROM ctq WHERE $column LIKE ?";
             $args = ["%" . $condition . "%"];
         } else {
-            $query = "SELECT * FROM CTQ WHERE " . implode(" LIKE ? OR ", $columnNames) . " LIKE ?";
+            $query = "SELECT * FROM ctq WHERE " . implode(" LIKE ? OR ", $columnNames) . " LIKE ?";
             $args = array_fill(0, count($columnNames), "%" . $condition . "%");
         }
         $rs = database_connection::executeQuery($query, ...$args);

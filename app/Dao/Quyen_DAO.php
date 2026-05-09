@@ -13,7 +13,7 @@ class Quyen_DAO implements DAOInterface {
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM Quyen");
+        $rs = database_connection::executeQuery("SELECT * FROM quyen");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createQuyenModel($row);
             array_push($list, $model);
@@ -27,7 +27,7 @@ class Quyen_DAO implements DAOInterface {
         return new Quyen($id, $tenQuyen, $trangThaiHD);
     }
     public function getLatestQ() {
-        $query = "SELECT * FROM QUYEN ORDER BY id DESC LIMIT 1";
+        $query = "SELECT * FROM quyen ORDER BY id DESC LIMIT 1";
         $result = database_connection::executeQuery($query);
         if ($result->num_rows > 0) {
             return $this->createQuyenModel($result->fetch_assoc());
@@ -36,7 +36,7 @@ class Quyen_DAO implements DAOInterface {
     }
     public function getAll() : array {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM QUYEN");
+        $rs = database_connection::executeQuery("SELECT * FROM quyen");
         while($row = $rs->fetch_assoc()) {
             $model = $this->createQuyenModel($row);
             array_push($list, $model);
@@ -44,7 +44,7 @@ class Quyen_DAO implements DAOInterface {
         return $list;
     }
     public function getById($id) {
-        $query = "SELECT * FROM QUYEN WHERE id = ?";
+        $query = "SELECT * FROM quyen WHERE id = ?";
         $result = database_connection::executeQuery($query, $id);
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -55,19 +55,19 @@ class Quyen_DAO implements DAOInterface {
         return null;
     }
     public function insert($model): int {
-        $query = "INSERT INTO Quyen (tenQuyen, trangThaiHD) VALUES (?,?)";
+        $query = "INSERT INTO quyen (tenQuyen, trangThaiHD) VALUES (?,?)";
         $args = [$model->getTenQuyen(), $model->getTrangThaiHD()];
         return database_connection::executeQuery($query, ...$args);
     }
     public function update($model): int {
-        $query = "UPDATE QUYEN SET tenQuyen = ?, trangThaiHD = ? WHERE id = ?";
+        $query = "UPDATE quyen SET tenQuyen = ?, trangThaiHD = ? WHERE id = ?";
         $args = [$model->getTenQuyen(), $model->getTrangThaiHD(), $model->getId()];
         $result = database_connection::executeUpdate($query, ...$args);
         return is_int($result) ? $result : 0;  
     }
     public function delete($id): int
     {
-        $query = "UPDATE QUYEN SET trangThaiHD = false WHERE id = ?";
+        $query = "UPDATE quyen SET trangThaiHD = false WHERE id = ?";
         $result = database_connection::executeUpdate($query, ...[$id]);
         
         return is_int($result) ? $result : 0;
@@ -80,14 +80,14 @@ class Quyen_DAO implements DAOInterface {
         }
         $query = "";
         if ($columnNames === null || count($columnNames) === 0) {
-            $query = "SELECT * FROM QUYEN WHERE id LIKE ? OR tenQuyen LIKE ? OR trangThaiHD LIKE ? ";
+            $query = "SELECT * FROM quyen WHERE id LIKE ? OR tenQuyen LIKE ? OR trangThaiHD LIKE ? ";
             $args = array_fill(0,  3, "%" . $condition . "%");
         } else if (count($columnNames) === 1) {
             $column = $columnNames[0];
-            $query = "SELECT * FROM QUYEN WHERE $column LIKE ?";
+            $query = "SELECT * FROM quyen WHERE $column LIKE ?";
             $args = ["%" . $condition . "%"];
         } else {
-            $query = "SELECT * FROM QUYEN WHERE " . implode(" LIKE ? OR ", $columnNames) . " LIKE ?";
+            $query = "SELECT * FROM quyen WHERE " . implode(" LIKE ? OR ", $columnNames) . " LIKE ?";
             $args = array_fill(0, count($columnNames), "%" . $condition . "%");
         }
         $rs = database_connection::executeQuery($query, ...$args);

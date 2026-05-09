@@ -13,7 +13,7 @@ class Tinh_DAO  {
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM TINH");
+        $rs = database_connection::executeQuery("SELECT * FROM tinh");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createTinhModel($row);
             array_push($list, $model);
@@ -28,7 +28,7 @@ class Tinh_DAO  {
     }
     public function getAll() : array {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM TINH WHERE TRANGTHAIHD = 1");
+        $rs = database_connection::executeQuery("SELECT * FROM tinh WHERE TRANGTHAIHD = 1");
         while($row = $rs->fetch_assoc()) {
             $model = $this->createTinhModel($row);
             array_push($list, $model);
@@ -36,7 +36,7 @@ class Tinh_DAO  {
         return $list;
     }
     public function getById($id) {
-        $query = "SELECT * FROM Tinh WHERE id = ?";
+        $query = "SELECT * FROM tinh WHERE id = ?";
         $result = database_connection::executeQuery($query, $id);
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -52,14 +52,14 @@ class Tinh_DAO  {
         return is_int($rs) ? $rs : 0;
     }
     public function update($model): int {
-        $query = "UPDATE TINH SET tenTinh = ?, trangThaiHD = ? WHERE id = ?";
+        $query = "UPDATE tinh SET tenTinh = ?, trangThaiHD = ? WHERE id = ?";
         $args = [$model->getTenTinh(), $model->getTrangThaiHD(), $model->getId()];
         $result = database_connection::executeUpdate($query, ...$args);
         return is_int($result) ? $result : 0;  
     }
     public function delete($id): int
     {
-        $query = "UPDATE TINH SET TRANGTHAIHD = 0 WHERE id = ?";
+        $query = "UPDATE tinh SET TRANGTHAIHD = 0 WHERE id = ?";
         $result = database_connection::executeUpdate($query,$id);
         
         return is_int($result) ? $result : 0;
@@ -71,7 +71,7 @@ class Tinh_DAO  {
             throw new InvalidArgumentException("Search condition cannot be empty or null");
         }
     
-        $query = "SELECT * FROM TINH WHERE tenTinh LIKE ?";
+        $query = "SELECT * FROM tinh WHERE tenTinh LIKE ?";
         $args = ["%" . $condition . "%"];
     
         $rs = database_connection::executeQuery($query, ...$args);

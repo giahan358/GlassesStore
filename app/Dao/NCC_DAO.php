@@ -12,7 +12,7 @@ class NCC_DAO implements DAOInterface
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM NCC");
+        $rs = database_connection::executeQuery("SELECT * FROM ncc");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createNCCModel($row);
             array_push($list, $model);
@@ -23,7 +23,7 @@ class NCC_DAO implements DAOInterface
     public function getAll(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM NCC");
+        $rs = database_connection::executeQuery("SELECT * FROM ncc");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createNCCModel($row);
             array_push($list, $model);
@@ -33,7 +33,7 @@ class NCC_DAO implements DAOInterface
 
     public function getById($id)
     {
-        $query = "SELECT * FROM NCC WHERE ID = ?";
+        $query = "SELECT * FROM ncc WHERE ID = ?";
         $result = database_connection::executeQuery($query, $id);
         if ($result && $result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -44,7 +44,7 @@ class NCC_DAO implements DAOInterface
 
    public function insert($model): int
 {
-    $query = "INSERT INTO NCC (TENNCC, SODIENTHOAI, DIACHI, MOTA, TRANGTHAIHD) VALUES (?, ?, ?, ?, ?)";
+    $query = "INSERT INTO ncc (TENNCC, SODIENTHOAI, DIACHI, MOTA, TRANGTHAIHD) VALUES (?, ?, ?, ?, ?)";
     $args = [
         $model->getTenNCC(), 
         $model->getSdtNCC(), 
@@ -63,7 +63,7 @@ class NCC_DAO implements DAOInterface
 
     public function update($model): int
     {
-        $query = "UPDATE NCC SET TENNCC = ?, SODIENTHOAI = ?, DIACHI = ?, MOTA = ?, TRANGTHAIHD = ? WHERE ID = ?";
+        $query = "UPDATE ncc SET TENNCC = ?, SODIENTHOAI = ?, DIACHI = ?, MOTA = ?, TRANGTHAIHD = ? WHERE ID = ?";
         $args = [$model->getTenNCC(), $model->getSdtNCC(), $model->getDiachi(), $model->getMoTa(), $model->getTrangthaiHD(), $model->getIdNCC()];
         return database_connection::executeUpdate($query, ...$args);
     }
@@ -81,13 +81,13 @@ public function delete($id): int
     $newStatus = ($ncc->getTrangthaiHD() == 1) ? 0 : 1;
 
     // Bước 3: Cập nhật vào Database
-    $query = "UPDATE NCC SET TRANGTHAIHD = ? WHERE ID = ?";
+    $query = "UPDATE ncc SET TRANGTHAIHD = ? WHERE ID = ?";
     return database_connection::executeUpdate($query, $newStatus, $id);
 }
 // Thêm hàm này vào trong class NCC_DAO (App\Dao\NCC_DAO)
 public function updateStatus(int $id, int $status): int
 {
-    $query = "UPDATE NCC SET TRANGTHAIHD = ? WHERE ID = ?";
+    $query = "UPDATE ncc SET TRANGTHAIHD = ? WHERE ID = ?";
     // Sử dụng executeUpdate để thực hiện lệnh thay đổi dữ liệu
     return database_connection::executeUpdate($query, $status, $id);
 }
@@ -98,14 +98,14 @@ public function updateStatus(int $id, int $status): int
         }
         $query = "";
         if ($columns === null || count($columns) === 0) {
-            $query = "SELECT * FROM NCC WHERE ID LIKE ? OR TENNCC LIKE ? OR SODIENTHOAI LIKE ? OR DIACHI LIKE ? OR MOTA LIKE ? OR TRANGTHAIHD LIKE ?";
+            $query = "SELECT * FROM ncc WHERE ID LIKE ? OR TENNCC LIKE ? OR SODIENTHOAI LIKE ? OR DIACHI LIKE ? OR MOTA LIKE ? OR TRANGTHAIHD LIKE ?";
             $args = array_fill(0, 6, "%" . $value . "%");
         } else if (count($columns) === 1) {
             $column = $columns[0];
-            $query = "SELECT * FROM NCC WHERE $column LIKE ?";
+            $query = "SELECT * FROM ncc WHERE $column LIKE ?";
             $args = ["%" . $value . "%"];
         } else {
-            $query = "SELECT * FROM NCC WHERE " . implode(" LIKE ? OR ", $columns) . " LIKE ?";
+            $query = "SELECT * FROM ncc WHERE " . implode(" LIKE ? OR ", $columns) . " LIKE ?";
             $args = array_fill(0, count($columns), "%" . $value . "%");
         }
         $rs = database_connection::executeQuery($query, ...$args);
@@ -135,7 +135,7 @@ public function getAllActive(): array
 {
     $list = [];
     // Chỉ lấy các nhà cung cấp có TRANGTHAIHD = 1 ngay từ câu lệnh SQL
-    $query = "SELECT * FROM NCC WHERE TRANGTHAIHD = 1";
+    $query = "SELECT * FROM ncc WHERE TRANGTHAIHD = 1";
     $rs = database_connection::executeQuery($query);
     
     while ($row = $rs->fetch_assoc()) {

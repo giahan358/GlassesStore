@@ -25,7 +25,7 @@ class TaiKhoan_DAO{
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM TAIKHOAN");
+        $rs = database_connection::executeQuery("SELECT * FROM taikhoan");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createTaiKhoanModel($row);
             array_push($list, $model);
@@ -43,7 +43,7 @@ class TaiKhoan_DAO{
     }
     public function getAll() : array {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM TAIKHOAN");
+        $rs = database_connection::executeQuery("SELECT * FROM taikhoan");
         while($row = $rs->fetch_assoc()) {
             $model = $this->createTaiKhoanModel($row);
             array_push($list, $model);
@@ -51,7 +51,7 @@ class TaiKhoan_DAO{
         return $list;
     }
     public function getById($id) {
-        $query = "SELECT * FROM TAIKHOAN WHERE email = ?";
+        $query = "SELECT * FROM taikhoan WHERE email = ?";
         $result = database_connection::executeQuery($query, $id);
         
         if ($result->num_rows > 0) {
@@ -65,7 +65,7 @@ class TaiKhoan_DAO{
     
     public function insert($model) {
         try {
-            $query = "INSERT INTO TAIKHOAN (tentk, email, password, idNguoiDung, idQuyen, trangthaihd) VALUES (?,?,?,?,?,?)";
+            $query = "INSERT INTO taikhoan (tentk, email, password, idNguoiDung, idQuyen, trangthaihd) VALUES (?,?,?,?,?,?)";
             $args = [$model->getTenTK(),$model->getEmail(), password_hash($model->getPassword(), PASSWORD_DEFAULT), $model->getIdNguoiDung()->getId(), $model->getIdQuyen()->getId(), $model->getTrangThaiHD()];
             $result = database_connection::executeUpdate($query, ...$args);
             // $tmp = 0;
@@ -85,7 +85,7 @@ class TaiKhoan_DAO{
     $tenTK = $model->getTenTK();
 
     // 1. Lấy dữ liệu hiện tại để lấy mật khẩu cũ (đối chiếu)
-    $sqlOld = "SELECT PASSWORD, EMAIL, IDNGUOIDUNG, IDQUYEN, TRANGTHAIHD FROM TAIKHOAN WHERE TENTK = ?";
+    $sqlOld = "SELECT PASSWORD, EMAIL, IDNGUOIDUNG, IDQUYEN, TRANGTHAIHD FROM taikhoan WHERE TENTK = ?";
     $rs = database_connection::executeQuery($sqlOld, $tenTK);
     $oldData = $rs->fetch_assoc();
     
@@ -101,7 +101,7 @@ class TaiKhoan_DAO{
     }
 
     // 3. Thực thi câu lệnh UPDATE với tên cột viết hoa theo DB
-    $query = "UPDATE TAIKHOAN SET EMAIL = ?, PASSWORD = ?, IDNGUOIDUNG = ?, IDQUYEN = ?, TRANGTHAIHD = ? WHERE TENTK = ?";
+    $query = "UPDATE taikhoan SET EMAIL = ?, PASSWORD = ?, IDNGUOIDUNG = ?, IDQUYEN = ?, TRANGTHAIHD = ? WHERE TENTK = ?";
     
     $args = [
         $model->getEmail() ?: $oldData['EMAIL'],
@@ -118,7 +118,7 @@ class TaiKhoan_DAO{
 }
     public function controlDelete($email, $active): int
     {
-        $query = "UPDATE TAIKHOAN SET trangThaiHD = ? WHERE email = ?";
+        $query = "UPDATE taikhoan SET trangThaiHD = ? WHERE email = ?";
         $args = [$active, $email];
         $result = database_connection::executeUpdate($query, ...$args);
         if ($result) {
@@ -142,7 +142,7 @@ class TaiKhoan_DAO{
 
     // CỐ ĐỊNH CHỈ TÌM TRÊN 3 CỘT VĂN BẢN
     // Không dùng $columnNames truyền vào để tránh quét trúng IDQUYEN hay IDNGUOIDUNG
-    $query = "SELECT tk.* FROM TAIKHOAN tk 
+    $query = "SELECT tk.* FROM taikhoan tk 
               LEFT JOIN NGUOIDUNG nd ON tk.IDNGUOIDUNG = nd.ID 
               WHERE tk.TENTK LIKE ? 
               OR tk.EMAIL LIKE ? 

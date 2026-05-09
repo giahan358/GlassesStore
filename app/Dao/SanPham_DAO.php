@@ -78,7 +78,7 @@ class SanPham_DAO implements DAOInterface{
 
     public function update($e): int
     {
-        $sql = "UPDATE SanPham SET tenSanPham = ?, idHang = ?, idLSP = ?, idKieuDang = ?, moTa = ?, donGia = ?, thoiGianBaoHanh = ?, soLuong = ?, trangThaiHD = ?
+        $sql = "UPDATE sanpham SET tenSanPham = ?, idHang = ?, idLSP = ?, idKieuDang = ?, moTa = ?, donGia = ?, thoiGianBaoHanh = ?, soLuong = ?, trangThaiHD = ?
         WHERE id = ?";
         $args = [$e->getTenSanPham(), $e->getIdHang()->getId(), $e->getIdLSP()->getId(), $e->getIdKieuDang()->getId(), $e->getMoTa(), $e->getDonGia(), $e->getThoiGianBaoHanh(), $e->getSoLuong(), $e->getTrangThaiHD(), $e->getId()];
         $result = database_connection::executeUpdate($sql, ...$args);
@@ -96,7 +96,7 @@ class SanPham_DAO implements DAOInterface{
         return is_int($result)? $result : 0;
     }
     public function controlActive($id,$active) {
-        $sql = "UPDATE SanPham SET trangThaiHD = ? WHERE id = ?";
+        $sql = "UPDATE sanpham SET trangThaiHD = ? WHERE id = ?";
         $args = [$active, $id];
         $result = database_connection::executeUpdate($sql, ...$args);
         return is_int($result)? $result : 0;
@@ -348,7 +348,7 @@ class SanPham_DAO implements DAOInterface{
 
     public function searchByLoaiSanPham($idLSP) {
         $list = [];
-        $query = "SELECT * FROM SANPHAM WHERE IDLSP = ?";
+        $query = "SELECT * FROM sanpham WHERE IDLSP = ?";
         $rs = database_connection::executeQuery($query, $idLSP);
         while($row = $rs->fetch_assoc()) {
             $model = $this->createSanPhamModel($row);
@@ -359,7 +359,7 @@ class SanPham_DAO implements DAOInterface{
 
     public function searchByHang($idHang) {
         $list = [];
-        $query = "SELECT * FROM SANPHAM WHERE IDHANG = ?";
+        $query = "SELECT * FROM sanpham WHERE IDHANG = ?";
         $rs = database_connection::executeQuery($query, $idHang);
         while($row = $rs->fetch_assoc()) {
             $model = $this->createSanPhamModel($row);
@@ -370,7 +370,7 @@ class SanPham_DAO implements DAOInterface{
 
     public function searchByLSPAndHang($lsp,$hang) {
         $list = [];
-        $query = "SELECT * FROM SANPHAM WHERE IDLSP = ? AND IDHANG = ?";
+        $query = "SELECT * FROM sanpham WHERE IDLSP = ? AND IDHANG = ?";
         $rs = database_connection::executeQuery($query, $lsp, $hang);
         while($row = $rs->fetch_assoc()) {
             $model = $this->createSanPhamModel($row);
@@ -419,7 +419,7 @@ class SanPham_DAO implements DAOInterface{
     public function searchByCriteria($idHang = null, $idLSP = null, $idKieuDang = null, $startPrice = null, $endPrice = null, $keyword = null)
 {
     $list = [];
-    $query = "SELECT * FROM SANPHAM WHERE TRANGTHAIHD = 1";
+    $query = "SELECT * FROM sanpham WHERE TRANGTHAIHD = 1";
     $params = [];
     $types = "";
 

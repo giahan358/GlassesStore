@@ -62,7 +62,7 @@ class LoaiSanPham_DAO implements DAOInterface {
     }
 
     public function getById($id) {
-        $query = "SELECT * FROM LOAISANPHAM WHERE id = ?";
+        $query = "SELECT * FROM loaisanpham WHERE id = ?";
         $result = database_connection::executeQuery($query, $id);
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();

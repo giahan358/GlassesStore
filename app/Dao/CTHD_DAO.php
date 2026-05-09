@@ -30,7 +30,7 @@ class CTHD_DAO{
 
     public function update($e): int
     {
-        $sql = "UPDATE CTHD SET trangThaiBD = ?) 
+        $sql = "UPDATE cthd SET trangThaiBD = ?) 
         WHERE IDHD = ?";
         $result = database_connection::executeUpdate($sql, ...[$e]);
         return is_int($result)? $result : 0;
@@ -69,7 +69,7 @@ class CTHD_DAO{
 
     public function getCTHDbyIDHD($id) {
         $list = [];
-        $query = "SELECT * FROM CTHD WHERE IDHD = ?";
+        $query = "SELECT * FROM cthd WHERE IDHD = ?";
         $rs = database_connection::executeQuery($query, $id);
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createCTHDModel($row);

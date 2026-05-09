@@ -18,7 +18,7 @@ class DiaChi_DAO {
 
     public function getAll() {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM DIACHI");
+        $rs = database_connection::executeQuery("SELECT * FROM diachi");
         while($row = $rs->fetch_assoc()) {
             $model = $this->createDiaChiModel($row);
             array_push($list, $model);
@@ -27,7 +27,7 @@ class DiaChi_DAO {
     }
     public function getByIdND($idND) {
         $list = [];
-        $query = "SELECT * FROM DIACHI WHERE IDND = ?";
+        $query = "SELECT * FROM diachi WHERE IDND = ?";
         $rs = database_connection::executeQuery($query, $idND);
         while($row = $rs->fetch_assoc()) {
             $model = $this->createDiaChiModel($row);

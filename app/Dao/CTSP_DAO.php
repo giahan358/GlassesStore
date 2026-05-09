@@ -9,7 +9,7 @@ use App\Services\database_connection;
 class CTSP_DAO{
     public function insert($e): int
     {
-        $sql = "INSERT INTO CTSP (idSP, soSeri, TRANGTHAIHD) 
+        $sql = "INSERT INTO ctsp (idSP, soSeri, TRANGTHAIHD) 
         VALUES (?, ?, ?)";
         $args = [$e->getIdSP()->getId(), $e->getSoSeri(), 1];
         return database_connection::executeQuery($sql, ...$args);
@@ -29,7 +29,7 @@ class CTSP_DAO{
     //     return new CTSP();
     // }
     public function getCTSPBySoSeri($soseri) {
-        $query = "SELECT * FROM CTSP WHERE SOSERI = ?";
+        $query = "SELECT * FROM ctsp WHERE SOSERI = ?";
         $result = database_connection::executeQuery($query, $soseri);
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -41,7 +41,7 @@ class CTSP_DAO{
     }
     public function getCTSPByIDSP($idsp) {
         $list = [];
-        $query = "SELECT * FROM CTSP WHERE IDSP = ?";
+        $query = "SELECT * FROM ctsp WHERE IDSP = ?";
         $rs = database_connection::executeQuery($query, $idsp);
         while ($row = $rs->fetch_assoc()) {
             $model = $row['SOSERI'];
@@ -54,7 +54,7 @@ class CTSP_DAO{
     // }
     public function getSeriOfCTSPNotSale($idsp) {
         $list = [];
-        $query = "SELECT * FROM CTSP WHERE IDSP = ? AND TRANGTHAIHD = 1";
+        $query = "SELECT * FROM ctsp WHERE IDSP = ? AND TRANGTHAIHD = 1";
         $rs = database_connection::executeQuery($query, $idsp);
         while ($row = $rs->fetch_assoc()) {
             $model = $row['SOSERI'];
@@ -63,7 +63,7 @@ class CTSP_DAO{
         return $list[0];
     }
     public function checkCTSPIsSold($soseri) {
-        $query = "SELECT * FROM CTSP WHERE SOSERI = ?";
+        $query = "SELECT * FROM ctsp WHERE SOSERI = ?";
         $result = database_connection::executeQuery($query, $soseri);
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -79,7 +79,7 @@ class CTSP_DAO{
     }
     public function getCTSPIsNotSoldByIDSP($idsp) {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM CTSP WHERE IDSP = ? AND TRANGTHAIHD = 1", $idsp);
+        $rs = database_connection::executeQuery("SELECT * FROM ctsp WHERE IDSP = ? AND TRANGTHAIHD = 1", $idsp);
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createCTSPModel($row);
             array_push($list, $model);
@@ -87,7 +87,7 @@ class CTSP_DAO{
         return $list;
     }
     public function updateStatus($soseri, $active) {
-        $query = 'UPDATE CTSP SET TRANGTHAIHD = ? WHERE SOSERI = ?';
+        $query = 'UPDATE ctsp SET TRANGTHAIHD = ? WHERE SOSERI = ?';
         $args = [$active, $soseri];
         $rs = database_connection::executeUpdate($query, ...$args);
         return is_int($rs) ? $rs : 0;  

@@ -17,7 +17,7 @@ class GioHang_DAO
     public function readDatabase(): array
     {
         $list = [];
-        $rs = database_connection::executeQuery("SELECT * FROM GIOHANG");
+        $rs = database_connection::executeQuery("SELECT * FROM giohang");
         while ($row = $rs->fetch_assoc()) {
             $model = $this->createGioHangModel($row);
             array_push($list, $model);
@@ -50,7 +50,7 @@ class GioHang_DAO
      * Lấy một bản ghi theo email và idSanPham (giả sử đây là khóa chính)
      */
     public function getById($id) {
-        $query = "SELECT * FROM GIOHANG WHERE ID = ?";
+        $query = "SELECT * FROM giohang WHERE ID = ?";
         $result = database_connection::executeQuery($query, $id);
         
         if ($result->num_rows > 0) {
@@ -63,7 +63,7 @@ class GioHang_DAO
     }
     public function getByEmail($email)
     {
-        $query = "SELECT * FROM GIOHANG WHERE email = ?";
+        $query = "SELECT * FROM giohang WHERE email = ?";
         $result = database_connection::executeQuery($query, $email);
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -94,7 +94,7 @@ class GioHang_DAO
      */
     public function update($e): int
     {
-        $query = "UPDATE GIOHANG SET createdAt = ? and trangThaiHD = ? WHERE email = ?";
+        $query = "UPDATE giohang SET createdAt = ? and trangThaiHD = ? WHERE email = ?";
         $args = [$e->getCreatedAt(), $e->getTrangThaiHD(), $e->getEmail()];
         $rs = database_connection::executeUpdate($query, ...$args);
         return is_int($rs) ? $rs : 0;
@@ -105,7 +105,7 @@ class GioHang_DAO
      */
     public function controlDelete($e, $active): int
     {
-        $query = "UPDATE GIOHANG SET trangThaiHD = ? WHERE ID = ?";
+        $query = "UPDATE giohang SET trangThaiHD = ? WHERE ID = ?";
         $args = [$active, $e];
         $rs = database_connection::executeUpdate($query,...$args);
         return is_int($rs) ? $rs : 0;
@@ -124,7 +124,7 @@ class GioHang_DAO
             ? ['email', 'idSanPham', 'soSeri']
             : $columnNames;
 
-        $query = "SELECT * FROM GIOHANG WHERE " . implode(" LIKE ? OR ", $columns) . " LIKE ?";
+        $query = "SELECT * FROM giohang WHERE " . implode(" LIKE ? OR ", $columns) . " LIKE ?";
         $args = array_fill(0, count($columns), "%" . $condition . "%");
         $rs = database_connection::executeQuery($query, ...$args);
 

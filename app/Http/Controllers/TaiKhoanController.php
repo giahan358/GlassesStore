@@ -100,7 +100,7 @@ public function update(Request $request)
         'idquyen' => 'required',
         'idnguoidung' => 'required',
         'password' => [
-            'required',
+            'nullable',
             'min:6',
             'regex:/[@$!%*?&]/' 
         ],

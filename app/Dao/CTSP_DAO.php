@@ -15,7 +15,7 @@ class CTSP_DAO{
         return database_connection::executeQuery($sql, ...$args);
     }
     public function getSPBySoSeri($soseri) {
-        $query = "SELECT * FROM CTSP WHERE SOSERI = ?";
+        $query = "SELECT * FROM ctsp WHERE SOSERI = ?";
         $result = database_connection::executeQuery($query, $soseri);
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();

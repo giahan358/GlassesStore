@@ -203,58 +203,62 @@ class HoaDon_BUS{
     return $hd;
 }
     public function chotDonHangSauThanhToan($request, $idHoaDon, $status) 
-    {
-        $source = session('checkout_source');
+{
+    $hd = $this->getModelById($idHoaDon);
+    if (!$hd) return false;
 
-        // Khởi tạo các BUS cần thiết
-        $cthdBus = app(CTHD_BUS::class);
-        $ctspBus = app(CTSP_BUS::class);
-        $spBus   = app(SanPham_BUS::class);
-        $ctghBus = app(CTGH_BUS::class);
-        $authBus = app(Auth_BUS::class);
-        $ghBus   = app(GioHang_BUS::class);
+    $cthdBus = app(CTHD_BUS::class);
+    $ctspBus = app(CTSP_BUS::class);
+    $spBus   = app(SanPham_BUS::class);
+    $ctghBus = app(CTGH_BUS::class);
+    $authBus = app(Auth_BUS::class);
+    $ghBus   = app(GioHang_BUS::class);
 
-        $hd = $this->getModelById($idHoaDon);
-        if (!$hd) return false;
+    $listCTHD = $cthdBus->getCTHTbyIDHD($idHoaDon);
+    if (empty($listCTHD)) return false;
 
-        $listCTHD = $cthdBus->getCTHTbyIDHD($idHoaDon);
-        if (empty($listCTHD)) return false;
+  
+    $email = $authBus->getEmailFromToken();
+    $gh = $ghBus->getByEmail($email);
+    $source = session('checkout_source');
 
-        $email = $authBus->getEmailFromToken();
-        $gh = $ghBus->getByEmail($email);
+    foreach ($listCTHD as $cthd) {
+        if (!$cthd) continue;
 
-        foreach ($listCTHD as $cthd) {
-            if (!$cthd) continue;
+        $soSeri = $cthd->getSoSeri();
+        $ctsp = $ctspBus->getCTSPBySoSeri($soSeri);
+        
+       
+        if ($ctsp && $ctsp->getTrangThaiHD() != 0) { 
+            $sp = $ctsp->getIdSP(); 
+            if ($sp) {
+              
+                $ctspBus->updateStatus($soSeri, 0); 
 
-            $soSeri = $cthd->getSoSeri();
-            $ctsp = $ctspBus->getCTSPBySoSeri($soSeri);
-            
-            if ($ctsp) {
-                $sp = $ctsp->getIdSP(); 
-                if ($sp) {
-                    $ctspBus->updateStatus($soSeri, 0); // Đã bán
-                    $sp->setSoLuong(max(0, $sp->getSoLuong() - 1));
-                    $spBus->updateModel($sp);
+                
+                $sp->setSoLuong(max(0, $sp->getSoLuong() - 1));
+                $spBus->updateModel($sp);
 
-                    if ($gh) {
-                        if ($source === 'cart') {
-                            $ctghBus->deleteCTGH($gh->getIdGH(), $sp->getId());
-                        } 
-                        // else ($source = 'buy_now') {
-                            
-                        // }
-                    }
+               
+                if ($gh && $source === 'cart') {
+                    $ctghBus->deleteCTGH($gh->getIdGH(), $sp->getId());
                 }
             }
         }
-
-        if ($status === "PAID") {
-            $hd->setTrangThai(\App\Enum\HoaDonEnum::PAID);
-        }
-        $this->updateModel($hd);
-        session()->forget('listSP');
-        return true;
     }
+
+    session()->forget('listSP');
+
+    if ($status === "PAID") {
+        $hd->setTrangThai(\App\Enum\HoaDonEnum::PAID);
+    } else {
+     
+        $hd->setTrangThai(\App\Enum\HoaDonEnum::PENDING);
+    }
+
+    $this->updateModel($hd);
+    return true;
+}
     
     public function huyThanhToanDonHang($idHoaDon) {
         $hd = $this->getModelById($idHoaDon);

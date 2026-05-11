@@ -59,7 +59,8 @@ class CheckVnpayPaymentStatus implements ShouldQueue
                     $order->setTrangThai(\App\Enum\HoaDonEnum::EXPIRED);
                     app(\App\Bus\HoaDon_BUS::class)->updateModel($order);
                     app(\App\Bus\Payment_BUS::class)->updatePaymentAttemptStatus($vnpayData['vnp_TxnRef'], $status);
-                }
+                    app(\App\Bus\HoaDon_BUS::class)->hoanKho($order->getId());
+                    }
             } else {
                 // Nếu không có TransactionStatus, log lại lỗi từ VNPAY
                 Log::warning("VNPAY không trả về Status. Response Code: " . ($vnpayData['vnp_ResponseCode'] ?? 'Unknown'));

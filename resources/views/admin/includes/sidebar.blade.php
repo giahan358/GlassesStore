@@ -148,13 +148,6 @@ use App\Bus\TaiKhoan_BUS;
       </a>
     </li>
     @endif
-    @if(app(CTQ_BUS::class)->checkChucNangExistInListCTQ($ctq, 12))
-    <li class="sidebar-item <?= ($currentModun == 'nguoidung') ? 'active' : '' ?>" id="nguoidung">
-      <a href="/admin?modun=nguoidung" class="sidebar-link">
-        <i class='bx bx-user'></i>
-        <span>Người dùng</span>
-      </a>
-    </li>
-    @endif
+    
   </ul>
 </aside>
